@@ -53,7 +53,7 @@ export function SegmentedControl<T extends string>({
       aria-label={ariaLabel}
       // max-w-full + overflow-x-auto keeps a wide control scrolling inside its
       // own box rather than pushing the page into a horizontal scroll.
-      className={`inline-flex max-w-full overflow-x-auto rounded-lg border border-line bg-inset p-0.5 ${
+      className={`no-scrollbar inline-flex max-w-full overflow-x-auto rounded-lg border border-line bg-inset p-0.5 ${
         full ? "w-full" : ""
       }`}
     >

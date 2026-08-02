@@ -60,6 +60,17 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+/* Scrollable without a visible bar. Only used where an alternative route
+   exists — the segmented control is also arrow-key navigable, and focusing a
+   segment scrolls it into view. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* Remove spinner arrows so numeric inputs read as figures, not steppers. */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
