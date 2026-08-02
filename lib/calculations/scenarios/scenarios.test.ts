@@ -260,6 +260,44 @@ describe("cross-scenario consistency", () => {
     expect(after.takeHome).toBeLessThan(before.takeHome);
   });
 
+  it("chart segments account for every pound of the headline figure", () => {
+    // The composition chart is only honest if its slices sum to the total.
+    const cases = [
+      calculateUmbrella(
+        {
+          assignmentIncome: ASSIGNMENT,
+          umbrellaMargin: 1_150,
+          applyApprenticeshipLevy: true,
+          holidayPayMethod: "accrued",
+          pensionMethod: "net-pay",
+          employeePensionPercent: 5,
+          studentLoanPlan: "plan2",
+        },
+        rates,
+      ),
+      calculateLimitedCompany(
+        {
+          revenue: ASSIGNMENT,
+          recurringExpenses: 8_000,
+          ownershipSharePercent: 50,
+          distributeAllProfit: false,
+          retainedProfit: 5_000,
+          studentLoanPlan: "plan2",
+        },
+        rates,
+      ),
+      calculatePaye(
+        { salary: 60_000, bonus: 5_000, pensionMethod: "net-pay", employeePensionPercent: 5 },
+        rates,
+      ),
+    ];
+
+    for (const result of cases) {
+      const summed = result.chartSegments.reduce((s, seg) => s + seg.value, 0);
+      expect(summed).toBeCloseTo(result.grossInput, 4);
+    }
+  });
+
   it("returns zeros rather than NaN for empty input", () => {
     for (const r of [
       calculateUmbrella({ assignmentIncome: 0 }, rates),

@@ -1,23 +1,43 @@
 interface CardProps {
   title?: string;
+  description?: string;
   children: React.ReactNode;
   className?: string;
+  /** Renders on the darker inset surface, for panels nested inside a card. */
+  inset?: boolean;
+  actions?: React.ReactNode;
 }
 
-/**
- * Simple panel container used to group a section of the dashboard.
- */
-export function Card({ title, children, className = "" }: CardProps) {
+export function Card({
+  title,
+  description,
+  children,
+  className = "",
+  inset = false,
+  actions,
+}: CardProps) {
   return (
     <section
-      className={`rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 ${className}`}
+      className={`rounded-2xl border border-line ${
+        inset ? "bg-inset" : "bg-surface"
+      } ${className}`}
     >
-      {title && (
-        <h2 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-          {title}
-        </h2>
+      {(title || actions) && (
+        <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4">
+          <div>
+            {title && (
+              <h2 className="text-base font-semibold tracking-tight text-ink">
+                {title}
+              </h2>
+            )}
+            {description && (
+              <p className="mt-1 text-sm leading-relaxed text-muted">{description}</p>
+            )}
+          </div>
+          {actions}
+        </div>
       )}
-      {children}
+      <div className="p-5">{children}</div>
     </section>
   );
 }

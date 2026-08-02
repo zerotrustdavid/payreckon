@@ -316,6 +316,14 @@ export function calculateUmbrella(
   return {
     taxYear: rates.taxYear,
     grossInput: assignment,
+    chartSegments: [
+      { label: "Take home", value: takeHome },
+      { label: "Income tax", value: personal.incomeTax.total + personal.dividendTax.total },
+      { label: "National Insurance", value: personal.nationalInsurance },
+      { label: "Employment costs", value: costs.total },
+      { label: "Student loan", value: personal.studentLoan.total },
+      { label: "Pension", value: pension.employeeContribution + accruedHoliday },
+    ],
     lines,
     takeHome,
     totalCapital,

@@ -280,6 +280,24 @@ export function calculateLimitedCompany(
   return {
     taxYear: rates.taxYear,
     grossInput: revenue,
+    chartSegments: [
+      { label: "Take home", value: takeHome },
+      { label: "Corporation tax", value: ct.total },
+      { label: "Income tax", value: personal.incomeTax.total },
+      { label: "Dividend tax", value: personal.dividendTax.total },
+      {
+        label: "National Insurance",
+        value: netEmployerNI + personal.nationalInsurance,
+      },
+      { label: "Student loan", value: personal.studentLoan.total },
+      { label: "Pension", value: pension.employeeContribution + companyPension },
+      {
+        // Revenue that never reaches you as income: business expenses, profit
+        // left in the company, and any co-owner's share of the dividends.
+        label: "Other",
+        value: expenses + retained + (distributed - yourDividends),
+      },
+    ],
     lines,
     takeHome,
     totalCapital,

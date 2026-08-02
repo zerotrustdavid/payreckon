@@ -213,6 +213,13 @@ export function calculatePaye(
   return {
     taxYear: rates.taxYear,
     grossInput: grossPay,
+    chartSegments: [
+      { label: "Take home", value: takeHome },
+      { label: "Income tax", value: personal.incomeTax.total + personal.dividendTax.total },
+      { label: "National Insurance", value: personal.nationalInsurance },
+      { label: "Student loan", value: personal.studentLoan.total },
+      { label: "Pension", value: pension.employeeContribution },
+    ],
     lines,
     takeHome,
     totalCapital,

@@ -12,9 +12,20 @@ export interface BreakdownLine {
 }
 
 /**
+ * A slice of the headline figure for the composition chart. Labels are drawn
+ * from a fixed vocabulary so a category keeps the same colour across calculators.
+ */
+export interface ChartSegment {
+  label: string;
+  value: number;
+}
+
+/**
  * The shape every calculator returns, so one results panel can render all three.
  */
 export interface CalculatorResult {
+  /** Where each pound of `grossInput` ends up. Sums to `grossInput`. */
+  chartSegments: ChartSegment[];
   taxYear: TaxYear;
   /** Headline input the estimate is built from (assignment income, revenue, salary). */
   grossInput: number;
