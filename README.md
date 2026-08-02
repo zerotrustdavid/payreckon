@@ -1,57 +1,75 @@
-# IR35 Contractor Dashboard
+# PayReckon
 
-A web dashboard for UK contractors to model income, contract type, and estimated
-tax exposure before running the numbers past an accountant.
+UK take-home pay calculators for contractors and employees. Compare being caught
+by IR35 through an umbrella company, working outside IR35 through your own
+limited company, and permanent employment on PAYE — with the same tax engine
+behind all three, so the comparison is genuinely like for like.
 
-> **Not financial advice.** These are gross-exposure estimates before business or
-> company expenses (accountancy, equipment, pension, etc.). Always confirm with a
-> qualified accountant.
+> **Not financial advice.** PayReckon produces estimates for planning purposes.
+> Always confirm your position with a qualified accountant before acting on it.
 
-## Features
+## Calculators
 
-- **Day-rate → income** — day rate × working days/week × working weeks/year =
-  gross annual revenue.
-- **Contract type** — compare three tax treatments side by side:
-  - **Inside IR35** — deemed employment: income tax (PAYE) + Class 1 employee NI.
-  - **Outside IR35, sole trader** — income tax + Class 4 NI on profit.
-  - **Outside IR35, own Ltd company** — corporation tax (with marginal relief),
-    then a low director salary + dividends. The salary is adjustable (default
-    £12,570).
-- **Tax estimate** — an itemised breakdown, total tax & NI, estimated take-home,
-  and the effective rate, updating live as inputs change.
+| Calculator | Models |
+|---|---|
+| **Inside IR35** (umbrella) | Assignment rate, umbrella margin, employer's NI, Apprenticeship Levy, employer pension, rolled-up vs accrued holiday pay |
+| **Outside IR35** (limited company) | Corporation tax with marginal relief, salary strategy, dividends, expenses, Employment Allowance, joint ownership, Business Asset Disposal Relief |
+| **Salary** (PAYE) | Bonus, overtime, cash allowances, benefits in kind, pension contributions |
 
-## Tax rates
+All three support **2024/25, 2025/26 and 2026/27**, rest-of-UK and Scottish
+income tax, tax codes, NI category letters, student loan plans 1/2/4/5 and
+postgraduate, three pension methods, Blind Person's and Marriage Allowance.
 
-Rates are for the **2026/27 UK tax year** (England, Wales & Northern Ireland;
-Scotland sets its own income tax bands and is not modelled). Every figure is
-verified against gov.uk and cited inline in
-[`lib/constants/tax-rates-2026-27.ts`](lib/constants/tax-rates-2026-27.ts).
+## What makes the numbers trustworthy
 
-Rates change every tax year (and sometimes mid-year via Budget). When they do,
-add a new `tax-rates-YYYY-YY.ts` file rather than editing historical years in
-place, so past years stay inspectable.
+**The umbrella calculation is solved, not estimated.** Employer's NI, the
+Apprenticeship Levy and employer pension are deducted *from* the assignment rate
+but charged *on* the gross pay that remains — each depends on the other. Rather
+than approximate, [`umbrella.ts`](lib/calculations/scenarios/umbrella.ts) solves
+the relationship algebraically per NI branch, and a round-trip test asserts that
+gross pay plus every employment cost returns the assignment rate exactly.
 
-## Tech stack
+**One tax engine, three calculators.**
+[`personalTax.ts`](lib/calculations/personalTax.ts) handles income tax, National
+Insurance, dividend tax and student loans for all three, so identical taxable
+income is taxed identically regardless of which arrangement produced it. The
+calculators differ only where the tax treatment genuinely does.
 
-- Next.js (App Router) + TypeScript
-- Tailwind CSS
-- Vitest for unit tests
-- Deployed on Vercel
+**Every rate is cited.** Figures come from gov.uk and gov.scot with the source
+URL in a comment beside the number — see
+[`lib/constants/`](lib/constants/). Rates are never edited in place when a new
+year arrives; a new `tax-rates-YYYY-YY.ts` is added, so historical calculations
+stay reproducible.
+
+**Details that are usually glossed over are modelled properly.** Benefits in
+kind raise taxable income without raising take-home and carry Class 1A employer
+NI rather than employee NI. Relief-at-source pensions extend the basic-rate band
+instead of reducing taxable pay. Scottish taxpayers pay Scottish rates on earned
+income but UK rates on dividends. Employment Allowance is refused to
+sole-director companies. Plan 5 student loans are flagged as not repayable
+before 2026/27 rather than silently charging nothing.
+
+## Tech
+
+Next.js (App Router) + TypeScript + Tailwind CSS, deployed on Vercel. Charts are
+hand-built with no charting dependency; the categorical palette is validated for
+colour-vision deficiency and contrast against the surface it renders on.
 
 ## Development
 
 ```bash
 npm install
 npm run dev      # http://localhost:3000
-npm test         # run the unit tests (tax calculations)
+npm test         # 138 unit tests covering the tax engine
 npm run build    # production build
 npm run lint     # eslint
 ```
 
-The tax logic lives in [`lib/calculations/`](lib/calculations/) as pure,
-unit-tested functions: shared primitives (income tax, NI, corporation tax,
-dividend tax) composed by per-mode scenarios in
-[`lib/calculations/scenarios/`](lib/calculations/scenarios/).
+The calculation layer lives in [`lib/calculations/`](lib/calculations/) as pure,
+unit-tested functions — shared primitives composed by per-arrangement scenarios
+in [`lib/calculations/scenarios/`](lib/calculations/scenarios/). No UI code is
+involved in any calculation, so the engine can be tested and reused
+independently.
 
 ## Versioning
 
