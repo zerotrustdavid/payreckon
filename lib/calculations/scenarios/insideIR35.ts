@@ -1,3 +1,4 @@
+import { getRates } from "../../constants";
 import { incomeTax } from "../incomeTax";
 import { class1EmployeeNI } from "../nationalInsurance";
 import type { ScenarioResult } from "../../types";
@@ -12,9 +13,10 @@ import type { ScenarioResult } from "../../types";
  * "tax on gross income before expenses" altitude.
  */
 export function insideIR35(grossRevenue: number): ScenarioResult {
+  const rates = getRates();
   const gross = Math.max(0, grossRevenue);
-  const tax = incomeTax(gross);
-  const ni = class1EmployeeNI(gross);
+  const tax = incomeTax(gross, rates).total;
+  const ni = class1EmployeeNI(gross, rates);
   const totalTax = tax + ni;
 
   return {

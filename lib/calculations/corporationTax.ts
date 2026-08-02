@@ -1,22 +1,33 @@
-import { CORPORATION_TAX } from "../constants/tax-rates-2026-27";
+import type { TaxYearRates } from "../constants/types";
+
+export interface CorporationTaxResult {
+  total: number;
+  /** Rate actually borne once Marginal Relief is taken into account. */
+  effectiveRate: number;
+  marginalRelief: number;
+  /** Which rule applied, for the detailed breakdown table. */
+  basis: "small-profits" | "marginal-relief" | "main-rate" | "none";
+}
 
 /**
- * Corporation tax on company profit, with Marginal Relief between the £50,000 and
- * £250,000 limits.
+ * Corporation tax on company profit, with Marginal Relief between the lower and
+ * upper limits.
  *
- *   profit ≤ £50,000        → 19% (small profits rate)
- *   profit ≥ £250,000       → 25% (main rate)
- *   £50,000 < profit < £250k → 25% less Marginal Relief
+ *   profit ≤ lower limit  → small profits rate
+ *   profit ≥ upper limit  → main rate
+ *   in between            → main rate less Marginal Relief, where
+ *                           MR = (upperLimit − profit) × fraction
  *
- * Marginal Relief (no associated companies, augmented profits = taxable profits):
- *   MR = (upperLimit − profit) × fraction(3/200)
- *   CT = profit × mainRate − MR
- *
- * Assumes a single company (no associates) and a 12-month accounting period; both
- * would otherwise pro-rate the limits.
+ * Assumes a single company with no associates and a 12-month accounting period;
+ * both would otherwise pro-rate the limits.
  */
-export function corporationTax(profit: number): number {
-  if (!Number.isFinite(profit) || profit <= 0) return 0;
+export function corporationTax(
+  profit: number,
+  rates: TaxYearRates,
+): CorporationTaxResult {
+  if (!Number.isFinite(profit) || profit <= 0) {
+    return { total: 0, effectiveRate: 0, marginalRelief: 0, basis: "none" };
+  }
 
   const {
     smallProfitsRate,
@@ -24,11 +35,31 @@ export function corporationTax(profit: number): number {
     marginalReliefLowerLimit,
     marginalReliefUpperLimit,
     marginalReliefFraction,
-  } = CORPORATION_TAX;
+  } = rates.corporationTax;
 
-  if (profit <= marginalReliefLowerLimit) return profit * smallProfitsRate;
-  if (profit >= marginalReliefUpperLimit) return profit * mainRate;
+  if (profit <= marginalReliefLowerLimit) {
+    const total = profit * smallProfitsRate;
+    return {
+      total,
+      effectiveRate: smallProfitsRate,
+      marginalRelief: 0,
+      basis: "small-profits",
+    };
+  }
 
-  const marginalRelief = (marginalReliefUpperLimit - profit) * marginalReliefFraction;
-  return profit * mainRate - marginalRelief;
+  if (profit >= marginalReliefUpperLimit) {
+    const total = profit * mainRate;
+    return { total, effectiveRate: mainRate, marginalRelief: 0, basis: "main-rate" };
+  }
+
+  const marginalRelief =
+    (marginalReliefUpperLimit - profit) * marginalReliefFraction;
+  const total = profit * mainRate - marginalRelief;
+
+  return {
+    total,
+    effectiveRate: total / profit,
+    marginalRelief,
+    basis: "marginal-relief",
+  };
 }

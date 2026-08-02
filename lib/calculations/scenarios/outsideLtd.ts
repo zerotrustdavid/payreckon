@@ -1,3 +1,4 @@
+import { getRates } from "../../constants";
 import { corporationTax } from "../corporationTax";
 import { dividendTax } from "../dividendTax";
 import { incomeTax } from "../incomeTax";
@@ -26,18 +27,19 @@ export function outsideLtd(
   grossRevenue: number,
   salary: number = DEFAULT_DIRECTOR_SALARY,
 ): ScenarioResult {
+  const rates = getRates();
   const gross = Math.max(0, grossRevenue);
   // Salary can't exceed available revenue.
   const directorSalary = Math.max(0, Math.min(salary, gross));
 
-  const employerNic = employerNI(directorSalary);
+  const employerNic = employerNI(directorSalary, rates);
   const profitBeforeCT = Math.max(0, gross - directorSalary - employerNic);
-  const corpTax = corporationTax(profitBeforeCT);
+  const corpTax = corporationTax(profitBeforeCT, rates).total;
   const dividends = Math.max(0, profitBeforeCT - corpTax);
 
-  const salaryIncomeTax = incomeTax(directorSalary);
-  const salaryEmployeeNI = class1EmployeeNI(directorSalary);
-  const divTax = dividendTax(directorSalary, dividends);
+  const salaryIncomeTax = incomeTax(directorSalary, rates).total;
+  const salaryEmployeeNI = class1EmployeeNI(directorSalary, rates);
+  const divTax = dividendTax(directorSalary, dividends, rates).total;
 
   const totalTax =
     employerNic + corpTax + salaryIncomeTax + salaryEmployeeNI + divTax;

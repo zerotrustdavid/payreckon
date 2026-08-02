@@ -1,3 +1,4 @@
+import { getRates } from "../../constants";
 import { incomeTax } from "../incomeTax";
 import { class4NI } from "../nationalInsurance";
 import type { ScenarioResult } from "../../types";
@@ -8,9 +9,10 @@ import type { ScenarioResult } from "../../types";
  * Mandatory Class 2 NI is £0 for 2026/27 and is not added.
  */
 export function outsideSoleTrader(grossRevenue: number): ScenarioResult {
+  const rates = getRates();
   const gross = Math.max(0, grossRevenue);
-  const tax = incomeTax(gross);
-  const ni = class4NI(gross);
+  const tax = incomeTax(gross, rates).total;
+  const ni = class4NI(gross, rates);
   const totalTax = tax + ni;
 
   return {
