@@ -8,7 +8,7 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://payreckon.vercel.app"),
+  metadataBase: new URL("https://payreckon.co.uk"),
   title: {
     default: "PayReckon — UK contractor and salary take-home calculators",
     template: "%s | PayReckon",

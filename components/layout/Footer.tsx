@@ -65,6 +65,12 @@ export function Footer() {
               Rates for {CURRENT_TAX_YEAR} and the two preceding years, taken from
               gov.uk and gov.scot and cited in the source.
             </p>
+            <Link
+              href="/brand"
+              className="mt-3 inline-block text-sm text-muted transition-colors hover:text-ink"
+            >
+              Brand assets
+            </Link>
           </div>
         </div>
 

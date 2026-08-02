@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { CALCULATORS } from "../lib/calculations/scenarios";
 import { GUIDES } from "../lib/content/guides";
 
-const BASE = "https://payreckon.vercel.app";
+const BASE = "https://payreckon.co.uk";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
