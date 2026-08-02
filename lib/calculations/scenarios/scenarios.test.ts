@@ -1,81 +1,274 @@
 import { describe, expect, it } from "vitest";
-import { calculateScenario, insideIR35, outsideLtd, outsideSoleTrader } from "./index";
+import { getRates } from "../../constants";
+import { employerNI } from "../nationalInsurance";
+import { calculateLimitedCompany } from "./limitedCompany";
+import { calculatePaye } from "./paye";
+import { calculateUmbrella, solveGrossPay } from "./umbrella";
 
-// Reference gross used across cases: £500/day × 5 × 46 = £115,000.
-const GROSS = 115_000;
+const rates = getRates("2026/27");
+const ASSIGNMENT = 115_000; // £500/day x 5 x 46
 
-describe("insideIR35", () => {
-  it("sums income tax + Class 1 NI on the gross (£115,000)", () => {
-    // incomeTax 36,432 + class1 (3,016 + 1,294.60) = 40,742.60
-    const r = insideIR35(GROSS);
-    expect(r.totalTax).toBeCloseTo(40_742.6, 1);
-    expect(r.takeHome).toBeCloseTo(74_257.4, 1);
+describe("solveGrossPay — the umbrella circular solve", () => {
+  it("recomposes exactly to the money available (round trip)", () => {
+    const available = 110_000;
+    const gross = solveGrossPay(available, rates, { levyRate: 0.005 });
+
+    const recomposed =
+      gross + employerNI(gross, rates) + gross * 0.005;
+
+    // Exact to the penny — this is the "no estimates" guarantee.
+    expect(recomposed).toBeCloseTo(available, 6);
+  });
+
+  it("round trips with employer pension in the mix", () => {
+    const available = 90_000;
+    const gross = solveGrossPay(available, rates, {
+      levyRate: 0.005,
+      employerPensionRate: 0.03,
+    });
+    const recomposed =
+      gross + employerNI(gross, rates) + gross * 0.005 + gross * 0.03;
+    expect(recomposed).toBeCloseTo(available, 6);
+  });
+
+  it("round trips below the employer NI threshold", () => {
+    // £4,000 is under the £5,000 secondary threshold, so no employer NI arises.
+    const gross = solveGrossPay(4_000, rates, { levyRate: 0.005 });
+    expect(gross + employerNI(gross, rates) + gross * 0.005).toBeCloseTo(4_000, 6);
+    expect(employerNI(gross, rates)).toBe(0);
+  });
+
+  it("picks the correct branch either side of the threshold", () => {
+    const below = solveGrossPay(4_000, rates);
+    expect(below).toBeCloseTo(4_000, 6);
+    const above = solveGrossPay(50_000, rates);
+    expect(above).toBeLessThan(50_000);
+  });
+
+  it("round trips for a zero-rate employer category (under 21)", () => {
+    const gross = solveGrossPay(60_000, rates, { niCategory: "M" });
+    expect(gross + employerNI(gross, rates, "M")).toBeCloseTo(60_000, 6);
+  });
+
+  it("returns 0 for no available income", () => {
+    expect(solveGrossPay(0, rates)).toBe(0);
+    expect(solveGrossPay(-100, rates)).toBe(0);
   });
 });
 
-describe("outsideSoleTrader", () => {
-  it("sums income tax + Class 4 NI on the gross (£115,000)", () => {
-    // incomeTax 36,432 + class4 (2,262 + 1,294.60) = 39,988.60
-    const r = outsideSoleTrader(GROSS);
-    expect(r.totalTax).toBeCloseTo(39_988.6, 1);
-    expect(r.takeHome).toBeCloseTo(75_011.4, 1);
+describe("calculateUmbrella", () => {
+  const base = { assignmentIncome: ASSIGNMENT, umbrellaMargin: 25 * 46 };
+
+  it("leaves no money unaccounted for", () => {
+    const r = calculateUmbrella(base, rates);
+    // Assignment = margin + employment taxes + personal taxes + take-home.
+    expect(r.takeHome + r.totalTax + (base.umbrellaMargin ?? 0)).toBeCloseTo(
+      ASSIGNMENT,
+      4,
+    );
+  });
+
+  it("charges more tax once the apprenticeship levy applies", () => {
+    const without = calculateUmbrella(base, rates);
+    const withLevy = calculateUmbrella(
+      { ...base, applyApprenticeshipLevy: true },
+      rates,
+    );
+    expect(withLevy.takeHome).toBeLessThan(without.takeHome);
+  });
+
+  it("moves accrued holiday pay out of take-home but keeps it in total capital", () => {
+    const rolled = calculateUmbrella(
+      { ...base, holidayPayMethod: "advanced" },
+      rates,
+    );
+    const accrued = calculateUmbrella(
+      { ...base, holidayPayMethod: "accrued" },
+      rates,
+    );
+    expect(accrued.takeHome).toBeLessThan(rolled.takeHome);
+    expect(accrued.totalCapital).toBeCloseTo(rolled.totalCapital, 4);
+  });
+
+  it("reduces take-home but preserves capital when pensions are paid", () => {
+    const none = calculateUmbrella(base, rates);
+    const withPension = calculateUmbrella(
+      { ...base, pensionMethod: "salary-sacrifice", employeePensionPercent: 5 },
+      rates,
+    );
+    expect(withPension.takeHome).toBeLessThan(none.takeHome);
+    expect(withPension.totalCapital).toBeGreaterThan(none.takeHome);
+  });
+
+  it("a bigger margin leaves less take-home", () => {
+    const small = calculateUmbrella({ ...base, umbrellaMargin: 500 }, rates);
+    const large = calculateUmbrella({ ...base, umbrellaMargin: 5_000 }, rates);
+    expect(large.takeHome).toBeLessThan(small.takeHome);
+  });
+
+  it("warns when a student loan plan is not repayable in the year", () => {
+    const r = calculateUmbrella(
+      { ...base, studentLoanPlan: "plan5" },
+      getRates("2024/25"),
+    );
+    expect(r.warnings.length).toBeGreaterThan(0);
   });
 });
 
-describe("outsideLtd", () => {
-  it("combines employer NI, corporation tax and dividend tax (£115,000, £12,570 salary)", () => {
-    // employerNI 1,135.50; profit 101,294.50; CT 23,093.0425; dividends 78,201.4575;
-    // dividend tax 18,478.2716 -> total 42,706.81
-    const r = outsideLtd(GROSS);
-    expect(r.totalTax).toBeCloseTo(42_706.81, 1);
-    expect(r.takeHome).toBeCloseTo(72_293.19, 1);
+describe("calculateLimitedCompany", () => {
+  const base = { revenue: ASSIGNMENT };
+
+  it("leaves no money unaccounted for", () => {
+    const r = calculateLimitedCompany(base, rates);
+    expect(r.takeHome + r.totalTax).toBeCloseTo(ASSIGNMENT, 4);
   });
 
-  it("clamps the salary to available revenue", () => {
-    const r = outsideLtd(10_000, 12_570);
-    // Salary can't exceed gross; no dividends left, but should not throw or go negative.
-    expect(r.totalTax).toBeGreaterThanOrEqual(0);
-    expect(r.takeHome + r.totalTax).toBeCloseTo(10_000, 6);
+  it("reduces corporation tax when expenses are claimed", () => {
+    const withExpenses = calculateLimitedCompany(
+      { ...base, recurringExpenses: 10_000 },
+      rates,
+    );
+    const without = calculateLimitedCompany(base, rates);
+    expect(withExpenses.totalTax).toBeLessThan(without.totalTax);
   });
 
-  it("leaves fewer dividends (and shifts the mix) as salary rises", () => {
-    const low = outsideLtd(GROSS, 12_570);
-    const high = outsideLtd(GROSS, 30_000);
-    const lowDiv = low.lines.find((l) => l.label === "Dividend tax")!.amount;
-    const highCorp = high.lines.find((l) => l.label === "Corporation tax")!.amount;
-    const lowCorp = low.lines.find((l) => l.label === "Corporation tax")!.amount;
-    // A bigger salary is deductible, so corporation tax falls.
-    expect(highCorp).toBeLessThan(lowCorp);
-    expect(lowDiv).toBeGreaterThan(0);
+  it("shows the personal allowance salary beating a high salary", () => {
+    const efficient = calculateLimitedCompany(
+      { ...base, salaryStrategy: "personal-allowance" },
+      rates,
+    );
+    const high = calculateLimitedCompany(
+      { ...base, salaryStrategy: "custom", customSalary: 50_000 },
+      rates,
+    );
+    expect(efficient.takeHome).toBeGreaterThan(high.takeHome);
+  });
+
+  it("ignores Employment Allowance without a second employee, and warns", () => {
+    const claimed = calculateLimitedCompany(
+      { ...base, claimEmploymentAllowance: true },
+      rates,
+    );
+    const notClaimed = calculateLimitedCompany(base, rates);
+    expect(claimed.totalTax).toBeCloseTo(notClaimed.totalTax, 6);
+    expect(claimed.warnings.length).toBeGreaterThan(0);
+  });
+
+  it("applies Employment Allowance when there is a second employee", () => {
+    const eligible = calculateLimitedCompany(
+      {
+        ...base,
+        salaryStrategy: "custom",
+        customSalary: 30_000,
+        claimEmploymentAllowance: true,
+        hasSecondEmployee: true,
+      },
+      rates,
+    );
+    const ineligible = calculateLimitedCompany(
+      { ...base, salaryStrategy: "custom", customSalary: 30_000 },
+      rates,
+    );
+    expect(eligible.takeHome).toBeGreaterThan(ineligible.takeHome);
+  });
+
+  it("halves dividends for a 50% owned business", () => {
+    const full = calculateLimitedCompany(base, rates);
+    const half = calculateLimitedCompany(
+      { ...base, ownershipSharePercent: 50 },
+      rates,
+    );
+    expect(half.takeHome).toBeLessThan(full.takeHome);
+  });
+
+  it("adds a BADR gain net of tax to total capital", () => {
+    const withGain = calculateLimitedCompany({ ...base, badrGain: 100_000 }, rates);
+    const without = calculateLimitedCompany(base, rates);
+    // 18% BADR in 2026/27 leaves £82,000 of a £100,000 gain.
+    expect(withGain.totalCapital - without.totalCapital).toBeCloseTo(82_000, 2);
   });
 });
 
-describe("scenario invariants", () => {
-  const modes = ["inside", "outside-sole-trader", "outside-ltd"] as const;
+describe("calculatePaye", () => {
+  it("matches a plain salary calculation", () => {
+    const r = calculatePaye({ salary: 60_000 }, rates);
+    expect(r.personal.incomeTax.total).toBeCloseTo(11_432, 2);
+    expect(r.personal.nationalInsurance).toBeCloseTo(3_210.6, 2);
+    expect(r.takeHome).toBeCloseTo(60_000 - 14_642.6, 2);
+  });
 
-  it("keeps takeHome + totalTax === gross for every mode", () => {
-    for (const mode of modes) {
-      const r = calculateScenario(mode, GROSS);
-      expect(r.takeHome + r.totalTax).toBeCloseTo(GROSS, 6);
+  it("leaves no money unaccounted for", () => {
+    const r = calculatePaye({ salary: 60_000, bonus: 5_000 }, rates);
+    expect(r.takeHome + r.totalTax).toBeCloseTo(65_000, 4);
+  });
+
+  it("taxes benefits in kind without adding them to take-home", () => {
+    const plain = calculatePaye({ salary: 60_000 }, rates);
+    const withBenefits = calculatePaye(
+      { salary: 60_000, taxableBenefits: 5_000 },
+      rates,
+    );
+    // More income tax, no extra employee NI, and lower take-home.
+    expect(withBenefits.personal.incomeTax.total).toBeGreaterThan(
+      plain.personal.incomeTax.total,
+    );
+    expect(withBenefits.personal.nationalInsurance).toBeCloseTo(
+      plain.personal.nationalInsurance,
+      6,
+    );
+    expect(withBenefits.takeHome).toBeLessThan(plain.takeHome);
+  });
+
+  it("counts bonus and overtime in gross pay", () => {
+    const r = calculatePaye(
+      { salary: 40_000, bonus: 5_000, overtime: 3_000, cashAllowances: 2_000 },
+      rates,
+    );
+    expect(r.grossInput).toBe(50_000);
+  });
+});
+
+describe("cross-scenario consistency", () => {
+  it("taxes the same salary identically through PAYE and a limited company", () => {
+    const paye = calculatePaye({ salary: 12_570 }, rates);
+    const ltd = calculateLimitedCompany(
+      { revenue: 12_570, salaryStrategy: "personal-allowance" },
+      rates,
+    );
+    expect(paye.personal.incomeTax.total).toBeCloseTo(
+      ltd.personal.incomeTax.total,
+      6,
+    );
+    expect(paye.personal.nationalInsurance).toBeCloseTo(
+      ltd.personal.nationalInsurance,
+      6,
+    );
+  });
+
+  it("produces a result for every calculator in every supported year", () => {
+    for (const year of ["2024/25", "2025/26", "2026/27"] as const) {
+      const y = getRates(year);
+      expect(calculateUmbrella({ assignmentIncome: ASSIGNMENT }, y).takeHome).toBeGreaterThan(0);
+      expect(calculateLimitedCompany({ revenue: ASSIGNMENT }, y).takeHome).toBeGreaterThan(0);
+      expect(calculatePaye({ salary: 60_000 }, y).takeHome).toBeGreaterThan(0);
     }
   });
 
-  it("returns zero tax and a 0% effective rate at zero revenue", () => {
-    for (const mode of modes) {
-      const r = calculateScenario(mode, 0);
+  it("shows the 2026/27 dividend rise costing a limited company more", () => {
+    const before = calculateLimitedCompany({ revenue: ASSIGNMENT }, getRates("2025/26"));
+    const after = calculateLimitedCompany({ revenue: ASSIGNMENT }, getRates("2026/27"));
+    expect(after.takeHome).toBeLessThan(before.takeHome);
+  });
+
+  it("returns zeros rather than NaN for empty input", () => {
+    for (const r of [
+      calculateUmbrella({ assignmentIncome: 0 }, rates),
+      calculateLimitedCompany({ revenue: 0 }, rates),
+      calculatePaye({ salary: 0 }, rates),
+    ]) {
+      expect(r.takeHome).toBe(0);
       expect(r.totalTax).toBe(0);
       expect(r.effectiveRate).toBe(0);
     }
-  });
-
-  it("routes each mode to the right scenario via the dispatcher", () => {
-    expect(calculateScenario("inside", GROSS).totalTax).toBeCloseTo(
-      insideIR35(GROSS).totalTax,
-      6,
-    );
-    expect(calculateScenario("outside-ltd", GROSS, { ltdSalary: 20_000 }).totalTax).toBeCloseTo(
-      outsideLtd(GROSS, 20_000).totalTax,
-      6,
-    );
   });
 });
