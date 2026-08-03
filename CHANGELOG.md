@@ -3,6 +3,29 @@
 All notable changes to this project are documented in this file.
 This project follows [Semantic Versioning](https://semver.org/).
 
+## [2.1.0] - 2026-08-03
+
+Re-themed to match the Invision Solutions brand system: a warm cream base with
+a gold accent, replacing the original dark teal theme.
+
+### Changed
+- Design tokens rebuilt around a cream/white surface stack, near-black ink and
+  a gold accent (`#c9a227`, deep gold `#8a6d1a` for light-background contrast)
+  in place of the dark teal palette.
+- Headline typography now uses Space Grotesk alongside Geist Sans for body
+  and UI text; section eyebrows moved to a tracked monospace treatment.
+- Primary buttons and the segmented control's selected state changed from a
+  filled accent pill to a solid ink pill with cream text, matching the
+  reference site's button convention; gold stays reserved for text accents,
+  links and tags.
+- The composition chart's eight-colour categorical palette was retuned for
+  contrast on a white surface (it was previously validated only for the dark
+  theme) and no longer overlaps the gold accent hue.
+- Semantic positive/warning/danger colours darkened for legibility on a light
+  background.
+- All logo, icon, favicon, Open Graph and Twitter card assets regenerated
+  from `scripts/generate-brand-assets.mjs` with the new palette.
+
 ## [2.0.0] - 2026-08-02
 
 Renamed to **PayReckon** and rebuilt from a single-page IR35 dashboard into a

@@ -12,7 +12,7 @@ export default function BrandPage() {
   return (
     <div className="mx-auto w-full max-w-6xl px-5 py-16">
       <header className="max-w-2xl">
-        <h1 className="text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+        <h1 className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">
           Brand assets
         </h1>
         <p className="mt-4 text-base leading-relaxed text-muted">
@@ -40,7 +40,7 @@ export default function BrandPage() {
                 >
                   <div
                     className={`flex h-32 items-center justify-center p-6 ${
-                      asset.preview === "dark" ? "bg-inset" : "bg-[#f4f7fa]"
+                      asset.preview === "dark" ? "bg-[#14140d]" : "bg-inset"
                     }`}
                   >
                     <Image
@@ -58,7 +58,7 @@ export default function BrandPage() {
                     <a
                       href={`/brand/${asset.file}`}
                       download
-                      className="mt-3 inline-block w-fit rounded-lg border border-line px-3 py-1.5 text-xs font-medium text-accent transition-colors hover:border-accent"
+                      className="mt-3 inline-block w-fit rounded-full border border-line px-3 py-1.5 text-xs font-medium text-accent transition-colors hover:border-accent"
                     >
                       Download
                     </a>
@@ -72,7 +72,7 @@ export default function BrandPage() {
         <section>
           <h2 className="text-xl font-semibold tracking-tight text-ink">Colours</h2>
           <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-muted">
-            The teal changes between backgrounds — the lighter tone lacks contrast
+            The gold changes between backgrounds — the brighter tone lacks contrast
             on white, so the deeper one is used there.
           </p>
           <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
