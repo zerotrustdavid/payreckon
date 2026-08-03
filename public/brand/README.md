@@ -11,8 +11,8 @@ A browsable version with previews and download buttons lives at `/brand`.
 
 | Use | File |
 |---|---|
-| Website header, dark UI | `payreckon-logo-dark.svg` |
-| Documents, invoices, anything on white | `payreckon-logo-light.svg` |
+| Website header, documents, invoices, anything on cream or white | `payreckon-logo-light.svg` |
+| Dark UI, dark slides, photography | `payreckon-logo-dark.svg` |
 | Favicon, app icon, social avatar | `payreckon-mark.svg` or `payreckon-mark-512.png` |
 | Platforms that apply their own corner mask | `payreckon-mark-square.svg` |
 | Print, large format | `payreckon-logo-*-4096.png` |
@@ -25,12 +25,16 @@ transparent, so they sit on any background of the matching tone.
 
 | Name | Hex | Use |
 |---|---|---|
-| Teal | `#2DD4BF` | Primary accent, on dark backgrounds |
-| Deep teal | `#0D9488` | Accent on light backgrounds (the lighter teal fails contrast on white) |
-| Mark ink | `#04211F` | The bars inside the icon |
-| Ink | `#080B0F` | Page background |
-| Surface | `#10161E` | Panels and cards |
-| Text | `#E8EEF4` | Body text on dark |
+| Gold | `#C9A227` | The brand gold. Fills the logo tile and other large shapes |
+| Deep gold | `#8A6D1A` | Gold type, links and icons — the brand gold is far too light to read as text |
+| Ink | `#14140D` | Body text, and the bars inside the icon |
+| Cream | `#FAF8F1` | Page background |
+| Surface | `#FFFFFF` | Panels and cards |
+| Muted | `#6D6B58` | Secondary body text |
+
+The two golds are not interchangeable. `#C9A227` is the brand colour and belongs
+on the tile, but at 2.3:1 against cream it fails accessible-contrast minimums for
+text; `#8A6D1A` clears them at 4.6:1. Set type in the deep one.
 
 ## Rules
 

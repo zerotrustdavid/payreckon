@@ -20,6 +20,13 @@ export default function BrandPage() {
           without losing quality — use it wherever it is accepted. The PNGs are
           transparent and go up to 4096px for print and large displays.
         </p>
+        <a
+          href="/payreckon-brand-kit.zip"
+          download
+          className="mt-6 inline-block rounded-full bg-ink px-5 py-3 text-sm font-semibold text-bg transition-opacity hover:opacity-90"
+        >
+          Download everything (.zip)
+        </a>
       </header>
 
       <div className="mt-12 flex flex-col gap-12">
@@ -72,8 +79,9 @@ export default function BrandPage() {
         <section>
           <h2 className="text-xl font-semibold tracking-tight text-ink">Colours</h2>
           <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-muted">
-            The gold changes between backgrounds — the brighter tone lacks contrast
-            on white, so the deeper one is used there.
+            There are two golds and they are not interchangeable. The brand gold
+            fills the logo tile and other large shapes; gold type uses the deep
+            one, which is the only tone that stays legible at text sizes.
           </p>
           <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {BRAND_COLOURS.map((colour) => (
@@ -106,6 +114,7 @@ export default function BrandPage() {
               "Use the light version on light backgrounds and the dark version on dark ones — do not place the dark version on a busy photograph.",
               "Do not stretch, recolour, rotate, or add effects to the logo.",
               "Below about 24px, use the icon on its own rather than the full logo.",
+              "The two golds are not interchangeable: the brand gold fills the tile, and gold type uses the deep gold, which is the only one that stays legible at text sizes.",
             ].map((rule) => (
               <li key={rule} className="text-sm leading-relaxed text-muted">
                 • {rule}

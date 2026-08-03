@@ -18,10 +18,15 @@
 
   --pr-text: #14140d;
   --pr-muted: #6d6b58;
-  --pr-faint: #9c9880;
+  --pr-faint: #75705a;
 
-  --pr-accent: #c9a227;
-  --pr-accent-strong: #8a6d1a;
+  /* Two golds, deliberately. The bright one is the brand gold and fills the
+     logo tile and other large shapes; at 2.3:1 on cream it is far too light
+     for type, so text, links and icons use the deep gold, which clears
+     WCAG AA at 4.6:1. Never set the bright one on text. */
+  --pr-accent: #8a6d1a;
+  --pr-accent-bright: #c9a227;
+  --pr-accent-strong: #6b5414;
   --pr-accent-ink: #14140d;
 
   --pr-positive: #157a3d;
@@ -40,6 +45,7 @@
   --color-muted: var(--pr-muted);
   --color-faint: var(--pr-faint);
   --color-accent: var(--pr-accent);
+  --color-accent-bright: var(--pr-accent-bright);
   --color-accent-strong: var(--pr-accent-strong);
   --color-accent-ink: var(--pr-accent-ink);
   --color-positive: var(--pr-positive);

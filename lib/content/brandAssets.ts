@@ -135,8 +135,16 @@ export const BRAND_GROUPS: BrandGroup[] = [
 ];
 
 export const BRAND_COLOURS = [
-  { name: "Gold", hex: "#C9A227", use: "Primary accent, on dark backgrounds" },
-  { name: "Deep gold", hex: "#8A6D1A", use: "Accent on light backgrounds" },
+  {
+    name: "Gold",
+    hex: "#C9A227",
+    use: "The brand gold. Fills the logo tile and other large shapes",
+  },
+  {
+    name: "Deep gold",
+    hex: "#8A6D1A",
+    use: "Gold type, links and icons — the brand gold is too light to read",
+  },
   { name: "Ink", hex: "#14140D", use: "Body text, and the bars inside the icon" },
   { name: "Cream", hex: "#FAF8F1", use: "Page background" },
   { name: "Surface", hex: "#FFFFFF", use: "Panels and cards" },

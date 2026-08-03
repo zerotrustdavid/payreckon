@@ -3,6 +3,23 @@
 All notable changes to this project are documented in this file.
 This project follows [Semantic Versioning](https://semver.org/).
 
+## [2.1.1] - 2026-08-03
+
+### Fixed
+- The gold accent failed WCAG AA as text: at 2.3:1 on cream it was being used
+  for eyebrows, links, the "Reckon" wordmark and field hints. The accent token
+  is now the deep gold (4.6:1), with the brand gold kept as a separate
+  `--pr-accent-bright` token reserved for the logo tile and other large shapes.
+  `--pr-faint` was likewise darkened from 2.7:1 to 4.7:1.
+
+### Added
+- A brand kit zip of every logo file, built by `npm run brand` and offered as a
+  single "Download everything" button on /brand.
+
+### Changed
+- The bundled `public/brand/README.md` still documented the old teal palette;
+  it now documents the gold system and the rule separating the two golds.
+
 ## [2.1.0] - 2026-08-03
 
 Re-themed to match the Invision Solutions brand system: a warm cream base with
