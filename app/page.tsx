@@ -22,10 +22,10 @@ export default function Home() {
     <>
       <section className="border-b border-line">
         <div className="mx-auto w-full max-w-6xl px-5 py-20 text-center">
-          <p className="text-sm font-medium text-accent">
+          <p className="font-mono text-xs font-medium uppercase tracking-widest text-accent">
             Tax years {TAX_YEARS[0]} to {CURRENT_TAX_YEAR}
           </p>
-          <h1 className="mx-auto mt-3 max-w-3xl text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
+          <h1 className="font-display mx-auto mt-3 max-w-3xl text-4xl font-bold tracking-tight text-ink sm:text-5xl">
             Work out what you actually keep
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-muted">
@@ -36,13 +36,13 @@ export default function Home() {
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Link
               href="/calculators"
-              className="rounded-lg bg-accent px-5 py-3 text-sm font-semibold text-accent-ink transition-colors hover:bg-accent-strong"
+              className="rounded-full bg-ink px-5 py-3 text-sm font-semibold text-bg transition-opacity hover:opacity-90"
             >
               Choose a calculator
             </Link>
             <Link
               href="/guides/ir35"
-              className="rounded-lg border border-line px-5 py-3 text-sm font-medium text-ink transition-colors hover:border-line-strong"
+              className="rounded-full border border-line px-5 py-3 text-sm font-medium text-ink transition-colors hover:border-line-strong"
             >
               What is IR35?
             </Link>
@@ -65,7 +65,7 @@ export default function Home() {
       </section>
 
       <section className="mx-auto w-full max-w-6xl px-5 pb-8">
-        <h2 className="text-2xl font-semibold tracking-tight text-ink">
+        <h2 className="font-display text-2xl font-bold tracking-tight text-ink">
           Three calculators, one tax engine
         </h2>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
@@ -81,7 +81,7 @@ export default function Home() {
               href={`/calculators/${calc.slug}`}
               className="group flex flex-col rounded-2xl border border-line bg-surface p-6 transition-colors hover:border-accent"
             >
-              <span className="text-xs font-medium uppercase tracking-wider text-accent">
+              <span className="font-mono text-xs font-medium uppercase tracking-widest text-accent">
                 {calc.subtitle}
               </span>
               <span className="mt-2 text-lg font-semibold text-ink">{calc.name}</span>

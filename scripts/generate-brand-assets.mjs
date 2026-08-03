@@ -20,15 +20,15 @@ const BRAND_DIR = join(ROOT, "public", "brand");
 const APP_DIR = join(ROOT, "app");
 
 const COLOUR = {
-  teal: "#2dd4bf",
-  /** Darker teal for use on light backgrounds, where #2dd4bf lacks contrast. */
-  tealDeep: "#0d9488",
-  /** Near-black with a green cast, used inside the mark. */
-  markInk: "#04211f",
-  darkBg: "#080b0f",
-  white: "#ffffff",
-  lightInk: "#0b1220",
-  muted: "#93a5b6",
+  gold: "#c9a227",
+  /** Darker gold for use on light backgrounds, where #c9a227 lacks contrast. */
+  goldDeep: "#8a6d1a",
+  /** Near-black, used inside the mark. */
+  markInk: "#14140d",
+  darkBg: "#14140d",
+  white: "#faf8f1",
+  lightInk: "#14140d",
+  muted: "#a8a38c",
 };
 
 const FONT = "Helvetica Neue, Helvetica, Arial, sans-serif";
@@ -54,7 +54,7 @@ function markSVG({ size = 64, rounded = true } = {}) {
     .join("");
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 64 64" role="img" aria-label="PayReckon">
-<rect width="64" height="64" rx="${rounded ? 15 : 0}" fill="${COLOUR.teal}"/>
+<rect width="64" height="64" rx="${rounded ? 15 : 0}" fill="${COLOUR.gold}"/>
 ${bars}
 </svg>`;
 }
@@ -63,7 +63,7 @@ ${bars}
 function lockupSVG({ width = 340, variant = "dark", withMark = true } = {}) {
   const onDark = variant === "dark";
   const payFill = onDark ? COLOUR.white : COLOUR.lightInk;
-  const reckonFill = onDark ? COLOUR.teal : COLOUR.tealDeep;
+  const reckonFill = onDark ? COLOUR.gold : COLOUR.goldDeep;
 
   const VB_W = withMark ? 340 : 258;
   const VB_H = 64;
@@ -86,14 +86,14 @@ ${mark}
 function ogImageSVG() {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
 <rect width="1200" height="630" fill="${COLOUR.darkBg}"/>
-<rect x="0" y="0" width="1200" height="4" fill="${COLOUR.teal}"/>
+<rect x="0" y="0" width="1200" height="4" fill="${COLOUR.gold}"/>
 <g transform="translate(96, 150) scale(1.5)">${markSVG({ size: 64 })
     .replace(/<svg[^>]*>/, "")
     .replace("</svg>", "")}</g>
 <text x="96" y="330" font-family="${FONT}" font-size="72" font-weight="700" letter-spacing="-2" fill="${COLOUR.white}">Work out what you</text>
 <text x="96" y="410" font-family="${FONT}" font-size="72" font-weight="700" letter-spacing="-2" fill="${COLOUR.white}">actually keep</text>
 <text x="96" y="480" font-family="${FONT}" font-size="30" font-weight="400" fill="${COLOUR.muted}">Inside IR35 · Outside IR35 · PAYE salary — UK take-home calculators</text>
-<text x="96" y="560" font-family="${FONT}" font-size="28" font-weight="700" letter-spacing="-0.5" fill="${COLOUR.white}">Pay<tspan fill="${COLOUR.teal}">Reckon</tspan></text>
+<text x="96" y="560" font-family="${FONT}" font-size="28" font-weight="700" letter-spacing="-0.5" fill="${COLOUR.white}">Pay<tspan fill="${COLOUR.gold}">Reckon</tspan></text>
 <text x="280" y="560" font-family="${FONT}" font-size="28" font-weight="400" fill="${COLOUR.muted}">payreckon.co.uk</text>
 </svg>`;
 }

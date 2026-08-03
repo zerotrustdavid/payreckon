@@ -4,23 +4,22 @@ import { useId, useState } from "react";
 import { formatGBP, formatPercent } from "../../lib/format";
 
 /**
- * Categorical palette, validated for this surface (#10161E) with
- * scripts/validate_palette.js: all eight slots sit inside the dark lightness
- * band, clear the chroma floor, hold >= 3:1 contrast, and the worst adjacent
- * pair separates at CVD ΔE 8.4 / normal-vision 19.3.
+ * Categorical palette, retuned for the cream/white surface: eight distinct,
+ * mid-to-dark hues that hold contrast on white, none overlapping the brand
+ * gold accent so a chart segment is never mistaken for a highlighted value.
  *
  * Slots are assigned by ENTITY below, never by rank, so a segment keeps its
  * colour whether or not other segments are present.
  */
 const SLOTS = [
-  "#3987e5",
-  "#d95926",
-  "#199e70",
-  "#c98500",
-  "#d55181",
-  "#008300",
-  "#9085e9",
-  "#e66767",
+  "#2563eb",
+  "#c2410c",
+  "#15803d",
+  "#7c3aed",
+  "#be185d",
+  "#0f766e",
+  "#4338ca",
+  "#78716c",
 ] as const;
 
 /**

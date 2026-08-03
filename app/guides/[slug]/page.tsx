@@ -32,7 +32,7 @@ export default async function GuidePage({
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_16rem]">
         <article className="max-w-2xl">
           <p className="text-sm text-faint">{guide.readingTime}</p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+          <h1 className="font-display mt-2 text-3xl font-bold tracking-tight text-ink sm:text-4xl">
             {guide.title}
           </h1>
           <p className="mt-4 text-lg leading-relaxed text-muted">{guide.summary}</p>
@@ -64,7 +64,7 @@ export default async function GuidePage({
               </p>
               <Link
                 href={`/calculators/${guide.relatedCalculator.slug}`}
-                className="mt-4 inline-block rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-accent-ink transition-colors hover:bg-accent-strong"
+                className="mt-4 inline-block rounded-full bg-ink px-4 py-2.5 text-sm font-semibold text-bg transition-opacity hover:opacity-90"
               >
                 {guide.relatedCalculator.label} →
               </Link>
