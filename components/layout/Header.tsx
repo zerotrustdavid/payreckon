@@ -9,6 +9,7 @@ import { Logo } from "./Logo";
 const NAV = [
   { href: "/calculators", label: "Calculators" },
   { href: "/guides", label: "Guides" },
+  { href: "/feedback", label: "Feedback" },
 ];
 
 export function Header() {
@@ -78,6 +79,13 @@ export function Header() {
               className="rounded-lg px-3 py-2.5 text-sm text-muted hover:bg-surface-2 hover:text-ink"
             >
               Guides
+            </Link>
+            <Link
+              href="/feedback"
+              onClick={() => setOpen(false)}
+              className="rounded-lg px-3 py-2.5 text-sm text-muted hover:bg-surface-2 hover:text-ink"
+            >
+              Feedback
             </Link>
           </nav>
         </div>

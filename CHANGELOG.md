@@ -3,6 +3,20 @@
 All notable changes to this project are documented in this file.
 This project follows [Semantic Versioning](https://semver.org/).
 
+## [2.2.0] - 2026-08-03
+
+### Added
+- A feedback page at `/feedback`: a form for reporting a figure that looks
+  wrong, flagging a bug, or suggesting a feature, categorised by type. Posts to
+  Web3Forms, so the site stays fully static with no server or database, and the
+  route still prerenders. Linked from the header, the footer and the sitemap.
+- `TextareaField`, matching the existing field components, with a character
+  counter and wired-up `aria-invalid` / `aria-describedby`.
+- `.env.example` documenting `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY`, the one piece
+  of configuration the site needs. Without it the form still renders and
+  validates but reports that it is not configured, rather than silently
+  discarding the message.
+
 ## [2.1.1] - 2026-08-03
 
 ### Fixed
