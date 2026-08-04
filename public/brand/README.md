@@ -11,8 +11,8 @@ A browsable version with previews and download buttons lives at `/brand`.
 
 | Use | File |
 |---|---|
-| Website header, documents, invoices, anything on cream or white | `payreckon-logo-light.svg` |
-| Dark UI, dark slides, photography | `payreckon-logo-dark.svg` |
+| The site itself, dark UI, dark slides, photography | `payreckon-logo-dark.svg` |
+| Documents, invoices, anything on white | `payreckon-logo-light.svg` |
 | Favicon, app icon, social avatar | `payreckon-mark.svg` or `payreckon-mark-512.png` |
 | Platforms that apply their own corner mask | `payreckon-mark-square.svg` |
 | Print, large format | `payreckon-logo-*-4096.png` |
@@ -25,16 +25,18 @@ transparent, so they sit on any background of the matching tone.
 
 | Name | Hex | Use |
 |---|---|---|
-| Gold | `#C9A227` | The brand gold. Fills the logo tile and other large shapes |
-| Deep gold | `#8A6D1A` | Gold type, links and icons — the brand gold is far too light to read as text |
-| Ink | `#14140D` | Body text, and the bars inside the icon |
-| Cream | `#FAF8F1` | Page background |
-| Surface | `#FFFFFF` | Panels and cards |
-| Muted | `#6D6B58` | Secondary body text |
+| Blue | `#7FB2FF` | The brand blue. Fills the logo tile, and sets type on dark backgrounds |
+| Deep blue | `#2563EB` | Blue type on light backgrounds |
+| Charcoal | `#22262C` | Page background |
+| Panel | `#2A2F36` | Cards and panels |
+| Ink | `#101418` | The bars inside the icon |
+| Text | `#EEF1F5` | Body text on charcoal |
 
-The two golds are not interchangeable. `#C9A227` is the brand colour and belongs
-on the tile, but at 2.3:1 against cream it fails accessible-contrast minimums for
-text; `#8A6D1A` clears them at 4.6:1. Set type in the deep one.
+Match the blue to the background. `#7FB2FF` is the brand colour and is pitched
+for the charcoal UI, where it reads at 7:1, but on white it drops to 2.2:1 and
+fails accessible-contrast minimums for text. On a light background, set type in
+`#2563EB`, which clears them at 5.2:1. The tile itself keeps the brand blue
+either way — a logo is exempt from those minimums, and consistency matters more.
 
 ## Rules
 

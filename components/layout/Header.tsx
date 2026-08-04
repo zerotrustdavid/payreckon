@@ -44,7 +44,7 @@ export function Header() {
 
         <Link
           href="/calculators"
-          className="ml-auto hidden rounded-full bg-ink px-4 py-2 text-sm font-semibold text-bg transition-opacity hover:opacity-90 md:block"
+          className="ml-auto hidden rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-ink transition-colors hover:bg-accent-strong md:block"
         >
           Run a calculation
         </Link>

@@ -27,10 +27,10 @@ export default function FeedbackPage() {
   return (
     <div className="mx-auto w-full max-w-6xl px-5 py-16">
       <header className="max-w-2xl">
-        <p className="font-mono text-xs font-medium uppercase tracking-widest text-accent">
+        <p className="text-sm font-medium text-accent">
           Feedback
         </p>
-        <h1 className="font-display mt-2 text-3xl font-bold tracking-tight text-ink sm:text-4xl">
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
           Tell us what to fix
         </h1>
         <p className="mt-4 text-base leading-relaxed text-muted">

@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="680" height="128" viewBox="0 0 340 64" role="img" aria-label="PayReckon">
 <g>
-<rect width="64" height="64" rx="15" fill="#c9a227"/>
-<rect x="15" y="36" width="9" height="13" rx="4.5" fill="#14140d"/><rect x="27.5" y="26.5" width="9" height="22.5" rx="4.5" fill="#14140d"/><rect x="40" y="17" width="9" height="32" rx="4.5" fill="#14140d"/>
+<rect width="64" height="64" rx="15" fill="#7fb2ff"/>
+<rect x="15" y="36" width="9" height="13" rx="4.5" fill="#101418"/><rect x="27.5" y="26.5" width="9" height="22.5" rx="4.5" fill="#101418"/><rect x="40" y="17" width="9" height="32" rx="4.5" fill="#101418"/>
 </g>
-<text x="82" y="45" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="44" font-weight="700" letter-spacing="-1.2" fill="#14140d">Pay<tspan fill="#8a6d1a">Reckon</tspan></text>
+<text x="82" y="45" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="44" font-weight="700" letter-spacing="-1.2" fill="#101418">Pay<tspan fill="#2563eb">Reckon</tspan></text>
 </svg>

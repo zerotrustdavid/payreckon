@@ -3,35 +3,37 @@
 /**
  * PayReckon design tokens.
  *
- * A warm cream base with a gold accent, matching the Invision Solutions
- * brand system. Surfaces step down in lightness off the cream page (page ->
- * panel -> inset), and every colour is declared here so the palette can be
- * reskinned in one place.
+ * A charcoal base with a clear blue accent. Deliberately a mid-dark grey
+ * rather than a near-black: dark enough to be easy on the eye for a long
+ * session with a calculator, light enough that nothing on it has to strain
+ * for contrast. Surfaces step up in lightness off the page (page -> panel ->
+ * raised), with inputs recessed below it, and every colour is declared here
+ * so the palette can be reskinned in one place.
+ *
+ * Every value is checked by `npm run palette`, which holds text to WCAG AA
+ * against each surface it renders on and keeps the chart fills apart under
+ * colour-vision deficiency. Change a colour here and run it.
  */
 :root {
-  --pr-bg: #faf8f1;
-  --pr-surface: #ffffff;
-  --pr-surface-2: #f2efe2;
-  --pr-inset: #f5f2e7;
-  --pr-border: #e6e1d0;
-  --pr-border-strong: #d4cdb3;
+  --pr-bg: #22262c;
+  --pr-surface: #2a2f36;
+  --pr-surface-2: #333942;
+  --pr-inset: #1c2026;
+  --pr-border: #3d444e;
+  --pr-border-strong: #747e8b;
 
-  --pr-text: #14140d;
-  --pr-muted: #6d6b58;
-  --pr-faint: #75705a;
+  --pr-text: #eef1f5;
+  --pr-muted: #b6bfca;
+  --pr-faint: #a0aab6;
 
-  /* Two golds, deliberately. The bright one is the brand gold and fills the
-     logo tile and other large shapes; at 2.3:1 on cream it is far too light
-     for type, so text, links and icons use the deep gold, which clears
-     WCAG AA at 4.6:1. Never set the bright one on text. */
-  --pr-accent: #8a6d1a;
-  --pr-accent-bright: #c9a227;
-  --pr-accent-strong: #6b5414;
-  --pr-accent-ink: #14140d;
+  --pr-accent: #7fb2ff;
+  --pr-accent-strong: #a3c8ff;
+  /* Sits on top of a filled accent button, so it has to be dark. */
+  --pr-accent-ink: #101418;
 
-  --pr-positive: #157a3d;
-  --pr-warning: #9a5b0f;
-  --pr-danger: #b91c1c;
+  --pr-positive: #5fd39a;
+  --pr-warning: #f0b64d;
+  --pr-danger: #ff8f8f;
 }
 
 @theme inline {
@@ -45,7 +47,6 @@
   --color-muted: var(--pr-muted);
   --color-faint: var(--pr-faint);
   --color-accent: var(--pr-accent);
-  --color-accent-bright: var(--pr-accent-bright);
   --color-accent-strong: var(--pr-accent-strong);
   --color-accent-ink: var(--pr-accent-ink);
   --color-positive: var(--pr-positive);
@@ -54,7 +55,6 @@
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-display: var(--font-space-grotesk);
 }
 
 body {

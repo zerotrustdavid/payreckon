@@ -1,6 +1,6 @@
 {
   "name": "payreckon",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -9,7 +9,8 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "brand": "node scripts/generate-brand-assets.mjs"
+    "brand": "node scripts/generate-brand-assets.mjs",
+    "palette": "node scripts/validate-palette.mjs"
   },
   "dependencies": {
     "next": "16.2.10",

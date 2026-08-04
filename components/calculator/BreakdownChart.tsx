@@ -4,22 +4,24 @@ import { useId, useState } from "react";
 import { formatGBP, formatPercent } from "../../lib/format";
 
 /**
- * Categorical palette, retuned for the cream/white surface: eight distinct,
- * mid-to-dark hues that hold contrast on white, none overlapping the brand
- * gold accent so a chart segment is never mistaken for a highlighted value.
+ * Categorical palette for the charcoal surface, chosen by searching a
+ * candidate pool rather than by eye: every slot clears 3:1 against the panel
+ * it sits on, and the worst-separated pair still measures ΔE 8.9 under
+ * protanopia, deuteranopia and tritanopia. `npm run palette` re-checks this
+ * and fails if a change breaks either property.
  *
  * Slots are assigned by ENTITY below, never by rank, so a segment keeps its
  * colour whether or not other segments are present.
  */
 const SLOTS = [
-  "#2563eb",
-  "#c2410c",
-  "#15803d",
-  "#7c3aed",
-  "#be185d",
-  "#0f766e",
-  "#4338ca",
-  "#78716c",
+  "#4fc48a", // take home — green, matching the colour the headline figure uses
+  "#f0885d", // income tax
+  "#ffd166", // national insurance
+  "#c3ccd8", // employment costs / other
+  "#ef7fae", // corporation tax
+  "#8f76d4", // dividend tax
+  "#2f9d69", // student loan
+  "#6ea8fe", // pension
 ] as const;
 
 /**

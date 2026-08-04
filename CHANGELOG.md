@@ -3,6 +3,40 @@
 All notable changes to this project are documented in this file.
 This project follows [Semantic Versioning](https://semver.org/).
 
+## [3.0.0] - 2026-08-04
+
+Re-themed again, away from the cream and gold. Visitor feedback was that the
+gold did not sit well, and it read too close to another site sharing the same
+palette, so the site now has its own identity: a charcoal base with a clear
+blue accent.
+
+### Changed
+- **Charcoal, deliberately mid-dark.** `#22262c` rather than the near-black of
+  the original dark theme, so it is easy on the eye over a long session without
+  anything on it having to strain for contrast. Panels step up from the page,
+  inputs recess below it.
+- **Blue accent** (`#7fb2ff`) replacing the gold, at 7:1 on the page.
+- Reverted the styling borrowed from the reference site: headlines return to
+  Geist rather than Space Grotesk, eyebrows to plain text rather than tracked
+  monospace, and primary buttons to a filled accent with dark ink rather than a
+  black pill.
+- The chart's categorical palette was re-picked for the charcoal surface by
+  searching a candidate pool rather than by eye. Take-home is now green,
+  matching the colour its headline figure is already set in.
+- All logo, icon, favicon and social assets regenerated in the new palette.
+
+### Added
+- `npm run palette`, which checks the whole theme rather than trusting it:
+  text against every surface it renders on at WCAG AA, anything conveying
+  state at 3:1, and chart fills held apart under protanopia, deuteranopia and
+  tritanopia. Exits non-zero on failure. Earlier code claimed a validated
+  palette and referenced a script that did not exist; now it does.
+
+### Fixed
+- Two accessibility failures inherited from the cream theme, caught by that
+  script rather than by eye: `faint` sat at 4.24:1 on the raised surface, and
+  `border-strong` — which marks an input's boundary on hover — at 2.97:1.
+
 ## [2.2.0] - 2026-08-03
 
 ### Added

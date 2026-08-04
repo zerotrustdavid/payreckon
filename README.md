@@ -52,8 +52,14 @@ before 2026/27 rather than silently charging nothing.
 ## Tech
 
 Next.js (App Router) + TypeScript + Tailwind CSS, deployed on Vercel. Charts are
-hand-built with no charting dependency; the categorical palette is validated for
-colour-vision deficiency and contrast against the surface it renders on.
+hand-built with no charting dependency.
+
+The theme is a charcoal base with a blue accent, and none of it is judged by
+eye: `npm run palette` holds every text colour to WCAG AA against each surface
+it actually renders on, checks that anything conveying state clears 3:1, and
+verifies that no two chart fills collapse into each other under protanopia,
+deuteranopia or tritanopia. It exits non-zero on failure, so a palette change
+that breaks contrast cannot land quietly.
 
 ## Development
 
@@ -65,6 +71,7 @@ npm test         # 138 unit tests covering the tax engine
 npm run build    # production build
 npm run lint     # eslint
 npm run brand    # regenerate every logo asset and the brand kit zip
+npm run palette  # check theme contrast and chart colour separation
 ```
 
 ### Environment

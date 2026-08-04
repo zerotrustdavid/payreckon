@@ -108,7 +108,7 @@ export function FeedbackForm() {
         role="status"
         className="rounded-2xl border border-line bg-surface p-6 text-center"
       >
-        <p className="font-display text-lg font-bold text-ink">Thank you</p>
+        <p className="text-lg font-semibold text-ink">Thank you</p>
         <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-muted">
           Your feedback has been sent. Every message is read — corrections to the
           tax figures in particular go straight to the top of the list.
@@ -116,7 +116,7 @@ export function FeedbackForm() {
         <button
           type="button"
           onClick={() => setStatus({ kind: "idle" })}
-          className="mt-5 rounded-full border border-line px-4 py-2 text-sm font-medium text-ink transition-colors hover:border-line-strong"
+          className="mt-5 rounded-lg border border-line px-4 py-2 text-sm font-medium text-ink transition-colors hover:border-line-strong"
         >
           Send another
         </button>
@@ -184,7 +184,7 @@ export function FeedbackForm() {
         <button
           type="submit"
           disabled={status.kind === "sending"}
-          className="rounded-full bg-ink px-5 py-3 text-sm font-semibold text-bg transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+          className="rounded-lg bg-accent px-5 py-3 text-sm font-semibold text-accent-ink transition-colors hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-60"
         >
           {status.kind === "sending" ? "Sending…" : "Send feedback"}
         </button>
