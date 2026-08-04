@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
+import { interpretResponse, networkFailure } from "../../lib/feedback/web3forms";
 import { SelectField } from "../ui/SelectField";
 import { TextareaField } from "../ui/TextareaField";
 
@@ -69,37 +70,49 @@ export function FeedbackForm() {
     }
 
     setStatus({ kind: "sending" });
+
+    let outcome;
     try {
       const response = await fetch(ENDPOINT, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          // Without this the API is entitled to answer with its HTML success
+          // page rather than JSON, which reads here as a failed submission
+          // even when the message went through.
+          Accept: "application/json",
+        },
         body: JSON.stringify({
           access_key: accessKey,
           subject: `PayReckon feedback — ${typeLabel}`,
           from_name: "PayReckon",
+          // Populates the name column in the Web3Forms dashboard, which would
+          // otherwise be blank on every row: the form collects no personal
+          // details, so there is no real name to send.
+          name: "PayReckon visitor",
           feedback_type: typeLabel,
           message: trimmed,
         }),
       });
 
-      const result: unknown = await response.json().catch(() => null);
-      const ok =
-        response.ok &&
-        typeof result === "object" &&
-        result !== null &&
-        (result as { success?: unknown }).success === true;
-
-      if (!ok) throw new Error("Submission rejected");
-      setStatus({ kind: "sent" });
-      setMessage("");
-      setAttempted(false);
-    } catch {
-      setStatus({
-        kind: "error",
-        message:
-          "Something went wrong sending that. Check your connection and try again.",
-      });
+      // Read as text, not json: a non-JSON reply is itself diagnostic, and
+      // response.json() would discard it.
+      outcome = interpretResponse(response.status, await response.text());
+    } catch (error) {
+      outcome = networkFailure(error);
     }
+
+    if (!outcome.ok) {
+      // The visitor sees the summary; the detail goes to the console so a
+      // report can say precisely what the API objected to.
+      console.error("Feedback submission failed —", outcome.detail);
+      setStatus({ kind: "error", message: outcome.message });
+      return;
+    }
+
+    setStatus({ kind: "sent" });
+    setMessage("");
+    setAttempted(false);
   }
 
   if (status.kind === "sent") {
