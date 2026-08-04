@@ -11,7 +11,7 @@ A browsable version with previews and download buttons lives at `/brand`.
 
 | Use | File |
 |---|---|
-| Website header, dark UI | `payreckon-logo-dark.svg` |
+| The site itself, dark UI, dark slides, photography | `payreckon-logo-dark.svg` |
 | Documents, invoices, anything on white | `payreckon-logo-light.svg` |
 | Favicon, app icon, social avatar | `payreckon-mark.svg` or `payreckon-mark-512.png` |
 | Platforms that apply their own corner mask | `payreckon-mark-square.svg` |
@@ -25,12 +25,18 @@ transparent, so they sit on any background of the matching tone.
 
 | Name | Hex | Use |
 |---|---|---|
-| Teal | `#2DD4BF` | Primary accent, on dark backgrounds |
-| Deep teal | `#0D9488` | Accent on light backgrounds (the lighter teal fails contrast on white) |
-| Mark ink | `#04211F` | The bars inside the icon |
-| Ink | `#080B0F` | Page background |
-| Surface | `#10161E` | Panels and cards |
-| Text | `#E8EEF4` | Body text on dark |
+| Blue | `#7FB2FF` | The brand blue. Fills the logo tile, and sets type on dark backgrounds |
+| Deep blue | `#2563EB` | Blue type on light backgrounds |
+| Charcoal | `#22262C` | Page background |
+| Panel | `#2A2F36` | Cards and panels |
+| Ink | `#101418` | The bars inside the icon |
+| Text | `#EEF1F5` | Body text on charcoal |
+
+Match the blue to the background. `#7FB2FF` is the brand colour and is pitched
+for the charcoal UI, where it reads at 7:1, but on white it drops to 2.2:1 and
+fails accessible-contrast minimums for text. On a light background, set type in
+`#2563EB`, which clears them at 5.2:1. The tile itself keeps the brand blue
+either way — a logo is exempt from those minimums, and consistency matters more.
 
 ## Rules
 

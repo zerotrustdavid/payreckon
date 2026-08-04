@@ -3,6 +3,71 @@
 All notable changes to this project are documented in this file.
 This project follows [Semantic Versioning](https://semver.org/).
 
+## [3.0.0] - 2026-08-04
+
+Re-themed again, away from the cream and gold. Visitor feedback was that the
+gold did not sit well, and it read too close to another site sharing the same
+palette, so the site now has its own identity: a charcoal base with a clear
+blue accent.
+
+### Changed
+- **Charcoal, deliberately mid-dark.** `#22262c` rather than the near-black of
+  the original dark theme, so it is easy on the eye over a long session without
+  anything on it having to strain for contrast. Panels step up from the page,
+  inputs recess below it.
+- **Blue accent** (`#7fb2ff`) replacing the gold, at 7:1 on the page.
+- Reverted the styling borrowed from the reference site: headlines return to
+  Geist rather than Space Grotesk, eyebrows to plain text rather than tracked
+  monospace, and primary buttons to a filled accent with dark ink rather than a
+  black pill.
+- The chart's categorical palette was re-picked for the charcoal surface by
+  searching a candidate pool rather than by eye. Take-home is now green,
+  matching the colour its headline figure is already set in.
+- All logo, icon, favicon and social assets regenerated in the new palette.
+
+### Added
+- `npm run palette`, which checks the whole theme rather than trusting it:
+  text against every surface it renders on at WCAG AA, anything conveying
+  state at 3:1, and chart fills held apart under protanopia, deuteranopia and
+  tritanopia. Exits non-zero on failure. Earlier code claimed a validated
+  palette and referenced a script that did not exist; now it does.
+
+### Fixed
+- Two accessibility failures inherited from the cream theme, caught by that
+  script rather than by eye: `faint` sat at 4.24:1 on the raised surface, and
+  `border-strong` — which marks an input's boundary on hover — at 2.97:1.
+
+## [2.2.0] - 2026-08-03
+
+### Added
+- A feedback page at `/feedback`: a form for reporting a figure that looks
+  wrong, flagging a bug, or suggesting a feature, categorised by type. Posts to
+  Web3Forms, so the site stays fully static with no server or database, and the
+  route still prerenders. Linked from the header, the footer and the sitemap.
+- `TextareaField`, matching the existing field components, with a character
+  counter and wired-up `aria-invalid` / `aria-describedby`.
+- `.env.example` documenting `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY`, the one piece
+  of configuration the site needs. Without it the form still renders and
+  validates but reports that it is not configured, rather than silently
+  discarding the message.
+
+## [2.1.1] - 2026-08-03
+
+### Fixed
+- The gold accent failed WCAG AA as text: at 2.3:1 on cream it was being used
+  for eyebrows, links, the "Reckon" wordmark and field hints. The accent token
+  is now the deep gold (4.6:1), with the brand gold kept as a separate
+  `--pr-accent-bright` token reserved for the logo tile and other large shapes.
+  `--pr-faint` was likewise darkened from 2.7:1 to 4.7:1.
+
+### Added
+- A brand kit zip of every logo file, built by `npm run brand` and offered as a
+  single "Download everything" button on /brand.
+
+### Changed
+- The bundled `public/brand/README.md` still documented the old teal palette;
+  it now documents the gold system and the rule separating the two golds.
+
 ## [2.1.0] - 2026-08-03
 
 Re-themed to match the Invision Solutions brand system: a warm cream base with

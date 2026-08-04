@@ -75,7 +75,7 @@ export function SegmentedControl<T extends string>({
               size === "sm" ? "px-2 py-1.5 text-xs sm:px-2.5" : "px-2.5 py-2 text-sm sm:px-3"
             } ${full ? "flex-1 shrink" : ""} ${
               selected
-                ? "bg-ink text-bg"
+                ? "bg-accent text-accent-ink"
                 : "text-muted hover:text-ink"
             }`}
           >

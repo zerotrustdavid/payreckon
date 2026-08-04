@@ -7,28 +7,39 @@
  * — no hand-edited binaries to drift out of sync.
  *
  * Output:
- *   public/brand/  downloadable logo files (SVG + high-res PNG)
- *   app/           icon, apple-icon and opengraph-image picked up by Next.js
+ *   public/brand/            downloadable logo files (SVG + high-res PNG)
+ *   public/payreckon-brand-kit.zip  the whole of the above, as one download
+ *   app/                     icon, apple-icon and opengraph-image picked up
+ *                            by Next.js
  */
-import { mkdir, writeFile } from "node:fs/promises";
+import { execFile } from "node:child_process";
+import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { promisify } from "node:util";
 import sharp from "sharp";
 
+const execFileAsync = promisify(execFile);
+
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const BRAND_DIR = join(ROOT, "public", "brand");
+const PUBLIC_DIR = join(ROOT, "public");
+const BRAND_DIR = join(PUBLIC_DIR, "brand");
 const APP_DIR = join(ROOT, "app");
+const KIT_ZIP = join(PUBLIC_DIR, "payreckon-brand-kit.zip");
 
 const COLOUR = {
-  gold: "#c9a227",
-  /** Darker gold for use on light backgrounds, where #c9a227 lacks contrast. */
-  goldDeep: "#8a6d1a",
-  /** Near-black, used inside the mark. */
-  markInk: "#14140d",
-  darkBg: "#14140d",
-  white: "#faf8f1",
-  lightInk: "#14140d",
-  muted: "#a8a38c",
+  /** The brand blue. Fills the logo tile, and sets type on dark backgrounds
+   *  where it reads at 7:1. Mirrors --pr-accent. */
+  blue: "#7fb2ff",
+  /** For light backgrounds: the brand blue only manages 2.2:1 on white, so
+   *  anything text-shaped there steps down to this, at 5.2:1. */
+  blueDeep: "#2563eb",
+  /** Near-black, used for the bars inside the mark. Mirrors --pr-accent-ink. */
+  markInk: "#101418",
+  darkBg: "#22262c",
+  white: "#eef1f5",
+  lightInk: "#101418",
+  muted: "#b6bfca",
 };
 
 const FONT = "Helvetica Neue, Helvetica, Arial, sans-serif";
@@ -54,7 +65,7 @@ function markSVG({ size = 64, rounded = true } = {}) {
     .join("");
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 64 64" role="img" aria-label="PayReckon">
-<rect width="64" height="64" rx="${rounded ? 15 : 0}" fill="${COLOUR.gold}"/>
+<rect width="64" height="64" rx="${rounded ? 15 : 0}" fill="${COLOUR.blue}"/>
 ${bars}
 </svg>`;
 }
@@ -63,7 +74,7 @@ ${bars}
 function lockupSVG({ width = 340, variant = "dark", withMark = true } = {}) {
   const onDark = variant === "dark";
   const payFill = onDark ? COLOUR.white : COLOUR.lightInk;
-  const reckonFill = onDark ? COLOUR.gold : COLOUR.goldDeep;
+  const reckonFill = onDark ? COLOUR.blue : COLOUR.blueDeep;
 
   const VB_W = withMark ? 340 : 258;
   const VB_H = 64;
@@ -86,14 +97,14 @@ ${mark}
 function ogImageSVG() {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
 <rect width="1200" height="630" fill="${COLOUR.darkBg}"/>
-<rect x="0" y="0" width="1200" height="4" fill="${COLOUR.gold}"/>
+<rect x="0" y="0" width="1200" height="4" fill="${COLOUR.blue}"/>
 <g transform="translate(96, 150) scale(1.5)">${markSVG({ size: 64 })
     .replace(/<svg[^>]*>/, "")
     .replace("</svg>", "")}</g>
 <text x="96" y="330" font-family="${FONT}" font-size="72" font-weight="700" letter-spacing="-2" fill="${COLOUR.white}">Work out what you</text>
 <text x="96" y="410" font-family="${FONT}" font-size="72" font-weight="700" letter-spacing="-2" fill="${COLOUR.white}">actually keep</text>
 <text x="96" y="480" font-family="${FONT}" font-size="30" font-weight="400" fill="${COLOUR.muted}">Inside IR35 · Outside IR35 · PAYE salary — UK take-home calculators</text>
-<text x="96" y="560" font-family="${FONT}" font-size="28" font-weight="700" letter-spacing="-0.5" fill="${COLOUR.white}">Pay<tspan fill="${COLOUR.gold}">Reckon</tspan></text>
+<text x="96" y="560" font-family="${FONT}" font-size="28" font-weight="700" letter-spacing="-0.5" fill="${COLOUR.white}">Pay<tspan fill="${COLOUR.blue}">Reckon</tspan></text>
 <text x="280" y="560" font-family="${FONT}" font-size="28" font-weight="400" fill="${COLOUR.muted}">payreckon.co.uk</text>
 </svg>`;
 }
@@ -174,6 +185,41 @@ async function main() {
 
   console.log(`Generated ${written.length} brand assets:`);
   for (const path of written) console.log(`  ${path}`);
+
+  await packageKit();
+}
+
+/**
+ * Bundles public/brand/ into a single download.
+ *
+ * The zip lands in public/ rather than public/brand/, so that re-running this
+ * never packages the previous zip inside the new one. Shells out to `zip`
+ * rather than taking on an archiver dependency — this is a manual, local-only
+ * script (the site build never runs it), so the trade is worth it.
+ */
+async function packageKit() {
+  await rm(KIT_ZIP, { force: true });
+  try {
+    // -j junks the paths, so the archive opens as a flat folder of files
+    // rather than nested public/brand/ directories.
+    await execFileAsync("zip", ["-j", "-q", KIT_ZIP, ...(await brandFiles())]);
+  } catch (error) {
+    if (error.code === "ENOENT") {
+      console.warn(
+        "\nSkipped the brand kit zip: no `zip` command on PATH.\n" +
+          "Everything else was written; install zip and re-run to build it.",
+      );
+      return;
+    }
+    throw error;
+  }
+  console.log(`\nPackaged ${KIT_ZIP.replace(`${ROOT}/`, "")}`);
+}
+
+async function brandFiles() {
+  const { readdir } = await import("node:fs/promises");
+  const names = await readdir(BRAND_DIR);
+  return names.sort().map((name) => join(BRAND_DIR, name));
 }
 
 main().catch((error) => {

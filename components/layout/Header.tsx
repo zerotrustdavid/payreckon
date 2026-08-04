@@ -9,6 +9,7 @@ import { Logo } from "./Logo";
 const NAV = [
   { href: "/calculators", label: "Calculators" },
   { href: "/guides", label: "Guides" },
+  { href: "/feedback", label: "Feedback" },
 ];
 
 export function Header() {
@@ -43,7 +44,7 @@ export function Header() {
 
         <Link
           href="/calculators"
-          className="ml-auto hidden rounded-full bg-ink px-4 py-2 text-sm font-semibold text-bg transition-opacity hover:opacity-90 md:block"
+          className="ml-auto hidden rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-ink transition-colors hover:bg-accent-strong md:block"
         >
           Run a calculation
         </Link>
@@ -78,6 +79,13 @@ export function Header() {
               className="rounded-lg px-3 py-2.5 text-sm text-muted hover:bg-surface-2 hover:text-ink"
             >
               Guides
+            </Link>
+            <Link
+              href="/feedback"
+              onClick={() => setOpen(false)}
+              className="rounded-lg px-3 py-2.5 text-sm text-muted hover:bg-surface-2 hover:text-ink"
+            >
+              Feedback
             </Link>
           </nav>
         </div>

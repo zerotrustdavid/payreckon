@@ -12,7 +12,7 @@ export default function BrandPage() {
   return (
     <div className="mx-auto w-full max-w-6xl px-5 py-16">
       <header className="max-w-2xl">
-        <h1 className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">
+        <h1 className="text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
           Brand assets
         </h1>
         <p className="mt-4 text-base leading-relaxed text-muted">
@@ -20,6 +20,13 @@ export default function BrandPage() {
           without losing quality — use it wherever it is accepted. The PNGs are
           transparent and go up to 4096px for print and large displays.
         </p>
+        <a
+          href="/payreckon-brand-kit.zip"
+          download
+          className="mt-6 inline-block rounded-lg bg-accent px-5 py-3 text-sm font-semibold text-accent-ink transition-colors hover:bg-accent-strong"
+        >
+          Download everything (.zip)
+        </a>
       </header>
 
       <div className="mt-12 flex flex-col gap-12">
@@ -40,7 +47,7 @@ export default function BrandPage() {
                 >
                   <div
                     className={`flex h-32 items-center justify-center p-6 ${
-                      asset.preview === "dark" ? "bg-[#14140d]" : "bg-inset"
+                      asset.preview === "dark" ? "bg-inset" : "bg-[#f4f6f9]"
                     }`}
                   >
                     <Image
@@ -58,7 +65,7 @@ export default function BrandPage() {
                     <a
                       href={`/brand/${asset.file}`}
                       download
-                      className="mt-3 inline-block w-fit rounded-full border border-line px-3 py-1.5 text-xs font-medium text-accent transition-colors hover:border-accent"
+                      className="mt-3 inline-block w-fit rounded-lg border border-line px-3 py-1.5 text-xs font-medium text-accent transition-colors hover:border-accent"
                     >
                       Download
                     </a>
@@ -72,8 +79,9 @@ export default function BrandPage() {
         <section>
           <h2 className="text-xl font-semibold tracking-tight text-ink">Colours</h2>
           <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-muted">
-            The gold changes between backgrounds — the brighter tone lacks contrast
-            on white, so the deeper one is used there.
+            The blue changes with the background. The brand blue is pitched for
+            the charcoal UI and only manages 2.2:1 on white, so anything set in
+            blue on a light background steps down to the deep blue instead.
           </p>
           <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {BRAND_COLOURS.map((colour) => (
@@ -106,6 +114,7 @@ export default function BrandPage() {
               "Use the light version on light backgrounds and the dark version on dark ones — do not place the dark version on a busy photograph.",
               "Do not stretch, recolour, rotate, or add effects to the logo.",
               "Below about 24px, use the icon on its own rather than the full logo.",
+              "Match the blue to the background: the brand blue is built for the dark UI, and blue type on a light background uses the deep blue instead.",
             ].map((rule) => (
               <li key={rule} className="text-sm leading-relaxed text-muted">
                 • {rule}
