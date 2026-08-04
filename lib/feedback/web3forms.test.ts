@@ -1,5 +1,52 @@
 import { describe, expect, it } from "vitest";
-import { interpretResponse, networkFailure } from "./web3forms";
+import {
+  interpretResponse,
+  networkFailure,
+  normaliseAccessKey,
+} from "./web3forms";
+
+const VALID = "def7a146-5c36-43c5-8c76-b4ef38da296e";
+
+describe("normaliseAccessKey", () => {
+  it("accepts a clean key", () => {
+    expect(normaliseAccessKey(VALID)).toEqual({ ok: true, key: VALID });
+  });
+
+  it("survives the trailing newline a dashboard paste adds", () => {
+    expect(normaliseAccessKey(`${VALID}\n`)).toEqual({ ok: true, key: VALID });
+  });
+
+  it("survives surrounding whitespace", () => {
+    expect(normaliseAccessKey(`  ${VALID}  `)).toEqual({ ok: true, key: VALID });
+  });
+
+  it("survives quotes pasted around the value", () => {
+    expect(normaliseAccessKey(`"${VALID}"`)).toEqual({ ok: true, key: VALID });
+    expect(normaliseAccessKey(`'${VALID}'`)).toEqual({ ok: true, key: VALID });
+  });
+
+  it("reports an unset key as missing, not malformed", () => {
+    expect(normaliseAccessKey(undefined)).toMatchObject({ reason: "missing" });
+    expect(normaliseAccessKey("   ")).toMatchObject({ reason: "missing" });
+  });
+
+  it("rejects a truncated key and says how long it was", () => {
+    const outcome = normaliseAccessKey(VALID.slice(0, 20));
+    expect(outcome).toMatchObject({ ok: false, reason: "malformed" });
+    if (!outcome.ok) expect(outcome.detail).toContain("20 characters");
+  });
+
+  it("rejects a key with an interior stray character", () => {
+    expect(normaliseAccessKey(VALID.replace("-", " "))).toMatchObject({
+      reason: "malformed",
+    });
+  });
+
+  it("never leaks the key into the detail it logs", () => {
+    const outcome = normaliseAccessKey("not-a-uuid-but-secret-looking");
+    if (!outcome.ok) expect(outcome.detail).not.toContain("secret-looking");
+  });
+});
 
 describe("interpretResponse", () => {
   it("accepts the documented success body", () => {

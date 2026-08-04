@@ -1,7 +1,11 @@
 "use client";
 
 import { useId, useState } from "react";
-import { interpretResponse, networkFailure } from "../../lib/feedback/web3forms";
+import {
+  interpretResponse,
+  networkFailure,
+  normaliseAccessKey,
+} from "../../lib/feedback/web3forms";
 import { SelectField } from "../ui/SelectField";
 import { TextareaField } from "../ui/TextareaField";
 
@@ -33,7 +37,9 @@ type Status =
  * out a ready-made endpoint to spam.
  */
 export function FeedbackForm() {
-  const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
+  const accessKey = normaliseAccessKey(
+    process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY,
+  );
 
   const [type, setType] = useState<FeedbackType>("accuracy");
   const [message, setMessage] = useState("");
@@ -60,11 +66,16 @@ export function FeedbackForm() {
       return;
     }
 
-    if (!accessKey) {
+    if (!accessKey.ok) {
+      // Both cases are a deployment problem rather than anything the visitor
+      // did, so say so plainly and put the specifics in the console.
+      console.error("Feedback form is misconfigured —", accessKey.detail);
       setStatus({
         kind: "error",
         message:
-          "This form is not configured yet, so the message was not sent. Please try again later.",
+          accessKey.reason === "missing"
+            ? "This form is not configured yet, so the message was not sent. Please try again later."
+            : "This form is misconfigured, so the message was not sent. Please try again later.",
       });
       return;
     }
@@ -83,7 +94,7 @@ export function FeedbackForm() {
           Accept: "application/json",
         },
         body: JSON.stringify({
-          access_key: accessKey,
+          access_key: accessKey.key,
           subject: `PayReckon feedback — ${typeLabel}`,
           from_name: "PayReckon",
           // Populates the name column in the Web3Forms dashboard, which would
