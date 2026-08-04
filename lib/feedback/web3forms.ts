@@ -9,6 +9,49 @@
  * that reason away.
  */
 
+/** Web3Forms access keys are UUIDs, and it rejects anything else outright. */
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export type AccessKeyCheck =
+  | { ok: true; key: string }
+  | { ok: false; reason: "missing" | "malformed"; detail: string };
+
+/**
+ * Cleans up and checks the configured access key before it is ever sent.
+ *
+ * A key pasted into a hosting dashboard picks up a trailing newline or a pair
+ * of quotes remarkably easily, and the API's reply for that — "Invalid
+ * form_id/access_key format" — points at the code rather than at the
+ * deployment setting that actually needs fixing. Stripping the usual
+ * accidents means the common case simply works, and anything still wrong is
+ * named as a configuration problem.
+ */
+export function normaliseAccessKey(raw: string | undefined): AccessKeyCheck {
+  if (typeof raw !== "string" || raw.trim() === "") {
+    return { ok: false, reason: "missing", detail: "no access key configured" };
+  }
+
+  const key = raw
+    .trim()
+    // Quotes are meant to delimit the value, not be part of it.
+    .replace(/^["']|["']$/g, "")
+    .trim();
+
+  if (!UUID.test(key)) {
+    // Deliberately describes the value rather than printing it: the key is
+    // publishable, but a log that quotes secrets is a habit worth not having.
+    return {
+      ok: false,
+      reason: "malformed",
+      detail:
+        `access key is not a UUID — ${key.length} characters` +
+        `${raw.length !== key.length ? `, ${raw.length - key.length} stripped as whitespace or quotes` : ""}`,
+    };
+  }
+
+  return { ok: true, key };
+}
+
 export type SubmissionOutcome =
   | { ok: true }
   | {
