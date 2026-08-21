@@ -8,6 +8,9 @@ behind all three, so the comparison is genuinely like for like.
 > **Not financial advice.** PayReckon produces estimates for planning purposes.
 > Always confirm your position with a qualified accountant before acting on it.
 
+This repository is public so the engineering behind it can be read and
+evaluated. It is not licensed for reuse: see [LICENSE.md](LICENSE.md).
+
 ## Calculators
 
 | Calculator | Models |
@@ -23,11 +26,10 @@ postgraduate, three pension methods, Blind Person's and Marriage Allowance.
 ## What makes the numbers trustworthy
 
 **The umbrella calculation is solved, not estimated.** Employer's NI, the
-Apprenticeship Levy and employer pension are deducted *from* the assignment rate
-but charged *on* the gross pay that remains — each depends on the other. Rather
-than approximate, [`umbrella.ts`](lib/calculations/scenarios/umbrella.ts) solves
-the relationship algebraically per NI branch, and a round-trip test asserts that
-gross pay plus every employment cost returns the assignment rate exactly.
+Apprenticeship Levy and employer pension are deducted from the assignment rate
+but charged on the gross pay that remains, so each one depends on the others.
+That circular dependency is solved exactly rather than approximated, and the
+figures reconcile to the penny against the assignment rate they came from.
 
 **One tax engine, three calculators.**
 [`personalTax.ts`](lib/calculations/personalTax.ts) handles income tax, National
@@ -67,7 +69,7 @@ that breaks contrast cannot land quietly.
 npm install
 cp .env.example .env.local   # then fill in the Web3Forms key (see below)
 npm run dev      # http://localhost:3000
-npm test         # 138 unit tests covering the tax engine
+npm test         # 155 unit tests covering the tax engine
 npm run build    # production build
 npm run lint     # eslint
 npm run brand    # regenerate every logo asset and the brand kit zip

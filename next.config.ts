@@ -49,9 +49,12 @@ const securityHeaders = [
     key: "Permissions-Policy",
     value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
   },
+  // No preload token. Submitting to the browser preload list is effectively
+  // irreversible, and the header should not advertise an intent that has not
+  // been decided on. Adding it later is a one line change.
   {
     key: "Strict-Transport-Security",
-    value: "max-age=63072000; includeSubDomains; preload",
+    value: "max-age=63072000; includeSubDomains",
   },
 ];
 
