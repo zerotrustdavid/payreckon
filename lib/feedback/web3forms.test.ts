@@ -5,7 +5,11 @@ import {
   normaliseAccessKey,
 } from "./web3forms";
 
-const VALID = "def7a146-5c36-43c5-8c76-b4ef38da296e";
+// Deliberately a throwaway all-zeros UUID, never a real access key. The tests
+// only need something UUID-shaped, so a live value buys nothing and would sit
+// in this public repository's history permanently. Allowlisted in
+// .gitleaks.toml so the UUID rules there do not fire on it.
+const VALID = "00000000-0000-4000-8000-000000000000";
 
 describe("normaliseAccessKey", () => {
   it("accepts a clean key", () => {

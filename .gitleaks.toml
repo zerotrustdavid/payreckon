@@ -1,0 +1,58 @@
+title = "PayReckon gitleaks configuration"
+
+# Supplements the default ruleset rather than replacing it.
+#
+# Why this file exists: gitleaks 8.21.2 scanned this repository's full history
+# and exited clean while a live Web3Forms access key sat in a committed test
+# file. The default rules do not match bare UUIDs, because a UUID carries too
+# little entropy to trip a generic detector and is indistinguishable from any
+# other identifier. A UUID is precisely the credential shape this project uses,
+# so the one class of secret that can realistically leak here was the one class
+# nothing was looking for.
+#
+# Two rules, deliberately. The first is the high confidence signal: a UUID
+# assigned to something that names itself a credential. The second is the
+# backstop, and it is the one that matters, because the key that actually
+# leaked was assigned to a constant called VALID, which the first rule would
+# have sailed straight past. A rule that would not have caught the incident
+# that motivated it is not a control.
+#
+# The all-zeros UUID below is the documented placeholder for tests. Any other
+# genuinely non-secret UUID should either use that value or be added to an
+# allowlist here, with a note saying why it is safe.
+
+[extend]
+useDefault = true
+
+# Build output and dependencies. Neither is committed, but `gitleaks dir` walks
+# the filesystem rather than the index and does not read .gitignore, so without
+# this a local run reports Next.js's own generated prerender tokens as findings
+# and buries anything real.
+[allowlist]
+description = "Uncommitted build output and vendored dependencies"
+paths = [
+  '''^\.next/''',
+  '''^node_modules/''',
+  '''^\.git/''',
+]
+
+[[rules]]
+id = "payreckon-uuid-credential-assignment"
+description = "UUID assigned to an identifier naming a credential"
+regex = '''(?i)[a-z0-9_]*(key|access|token|secret)[a-z0-9_]*["']?\s*[:=]\s*["'][0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}["']'''
+tags = ["uuid", "credential"]
+
+  [rules.allowlist]
+  description = "Documented all-zeros placeholder"
+  regexes = ['''00000000-0000-4000-8000-000000000000''']
+
+[[rules]]
+id = "payreckon-uuid-literal"
+description = "Bare UUID string literal in source, which may be a credential"
+regex = '''(?i)["'][0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}["']'''
+tags = ["uuid"]
+
+  [rules.allowlist]
+  description = "Documented all-zeros placeholder, and dependency metadata"
+  regexes = ['''00000000-0000-4000-8000-000000000000''']
+  paths = ['''package-lock\.json''']

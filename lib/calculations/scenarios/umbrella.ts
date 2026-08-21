@@ -64,6 +64,12 @@ export interface EmploymentCosts {
  *
  * Both roots are computed and the one consistent with its own branch is taken, so
  * the result is exact rather than iterated to a tolerance.
+ *
+ * The round trip in scenarios.test.ts is what holds this honest. It adds gross
+ * pay and every employment cost back together and asserts the total returns the
+ * assignment rate exactly, on both sides of the employer NI threshold, with
+ * employer pension in the mix, and for a zero-rate employer category. An
+ * approximation would drift and fail it.
  */
 export function solveGrossPay(
   availableForEmployment: number,
