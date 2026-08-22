@@ -29,7 +29,13 @@ jobs:
           node-version: 22
           cache: npm
 
-      - run: npm ci
+      # --ignore-scripts, deliberately. Dependency install scripts run arbitrary
+      # Node on every install, and nothing else in this pipeline inspects them.
+      # Verified that a full --ignore-scripts install still passes lint, tests,
+      # palette and build: the only two install scripts in the tree are dev-only
+      # and no-ops here, and the native binding they prepare is installed by npm
+      # through optionalDependencies without needing the script to run.
+      - run: npm ci --ignore-scripts
 
       - name: Lint
         run: npm run lint
@@ -45,6 +51,11 @@ jobs:
 
       - name: Audit dependencies
         run: npm audit --audit-level=high
+
+      # Catches a dependency acquiring a postinstall, which npm audit does not
+      # report and which would otherwise land silently in a patch release.
+      - name: Check for unexpected install scripts
+        run: npm run check:install-scripts
 
   secrets:
     runs-on: ubuntu-latest
