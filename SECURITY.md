@@ -37,14 +37,18 @@ site.
 
 ## A note on the Web3Forms access key
 
-The feedback form's access key is a publishable value. It is prefixed
-`NEXT_PUBLIC_`, it is compiled into the client bundle by design, and it is
-therefore visible to anyone viewing source. That is how Web3Forms works and is
-not a vulnerability on its own. Submissions are restricted to this site's
-domain in the Web3Forms dashboard.
+The feedback form's access key is a publishable value rather than a secret. It
+is prefixed `NEXT_PUBLIC_`, it is compiled into the client bundle by design,
+and it is therefore visible to anyone viewing source. Web3Forms treats it as
+the form's own identifier, so its being visible is not a vulnerability and does
+not need reporting.
 
-If you find a way to abuse it despite that restriction, that is very much in
-scope and worth reporting.
+Submissions are additionally restricted to this site's domain in the Web3Forms
+dashboard. That restriction is worth having, but it is enforced on a request
+header, so it raises the effort required rather than preventing abuse outright.
+
+If you find a way to abuse the form, including past that restriction, that is
+in scope and worth reporting.
 
 ## Reporting an incorrect tax figure
 
