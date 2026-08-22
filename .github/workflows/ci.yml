@@ -77,9 +77,11 @@ jobs:
           chmod +x gitleaks
 
       # Scans the tree as it would be merged, which is what stops a new secret
-      # landing. Full history is not scanned here: it contains one accepted,
-      # already rotated finding, and failing every build on it forever would
-      # only teach people to ignore this job. Scan history manually with
+      # landing. Full history is not scanned here: it contains one known
+      # finding, a Web3Forms access key that is publishable by design and whose
+      # continued exposure is a deliberately accepted risk rather than one that
+      # has been remediated. Failing every build on it forever would only teach
+      # people to ignore this job. Scan history manually with
       # `gitleaks git . --log-opts="--all" -c .gitleaks.toml` after any change
       # to the rules.
       - name: Scan for secrets
