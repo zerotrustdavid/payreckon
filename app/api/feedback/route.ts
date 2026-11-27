@@ -15,8 +15,19 @@ import {
 // somewhere to be logged.
 export const runtime = "nodejs";
 
-const FROM = process.env.FEEDBACK_FROM ?? "PayReckon <feedback@invisionsolutions.co.uk>";
-const TO = process.env.FEEDBACK_TO ?? "payreckon@invisionsolutions.co.uk";
+// payreckon.co.uk is the verified Resend sending domain; a key restricted to
+// it, as this one is, can only send from an address on it.
+const FROM = process.env.FEEDBACK_FROM ?? "PayReckon <feedback@payreckon.co.uk>";
+
+// david@invisionsolutions.co.uk, not a payreckon.co.uk address: it is the
+// one destination this project has independent evidence is a real, read
+// mailbox (SECURITY.md's own disclosure contact), after
+// payreckon@invisionsolutions.co.uk was found to bounce outright —
+// "Recipient address rejected: Address does not exist" — on a real send
+// through this exact route. Override with FEEDBACK_TO once a dedicated,
+// confirmed-working mailbox exists; do not restore the old address without
+// first confirming it is real.
+const TO = process.env.FEEDBACK_TO ?? "david@invisionsolutions.co.uk";
 
 // Per-instance, see RateLimiter's own note on what this does and does not
 // guarantee across Vercel's multiple concurrent instances.
@@ -70,9 +81,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false, error: validated.error }, { status: validated.status });
   }
 
-  const apiKey = process.env.RESEND_API_KEY;
+  // Named to match what is actually configured in Vercel for this project,
+  // not Resend's own generic convention — confirm the exact name there
+  // before ever changing it here, the two must match exactly.
+  const apiKey = process.env.PAYRECKON_FEEDBACK_SENDING;
   if (!apiKey) {
-    console.error("Feedback route is misconfigured — RESEND_API_KEY is not set.");
+    console.error("Feedback route is misconfigured — PAYRECKON_FEEDBACK_SENDING is not set.");
     return NextResponse.json(
       { ok: false, error: "This form is not configured yet. Please try again later." },
       { status: 503 },

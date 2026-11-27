@@ -82,7 +82,7 @@ The feedback form at `/feedback` posts to this site's own
 [`/api/feedback`](app/api/feedback/route.ts) route, which sends through
 [Resend](https://resend.com). That is the one dynamic route in an otherwise
 fully static site — every other page still prerenders with no server or
-database involved. `RESEND_API_KEY` must be set locally and in Vercel
+database involved. `PAYRECKON_FEEDBACK_SENDING` must be set locally and in Vercel
 (Production and Preview — test on Preview first) — see
 [`.env.example`](.env.example). Without it the page still renders and
 validates, but submitting reports that the form is not configured rather than
