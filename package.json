@@ -2,6 +2,8 @@
   "name": "payreckon",
   "version": "3.0.0",
   "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -14,22 +16,24 @@
     "check:install-scripts": "node scripts/check-install-scripts.mjs"
   },
   "dependencies": {
-    "next": "16.3.2",
+    "next": "16.4.6",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/node": "^26.6.11",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@vitejs/plugin-react": "^6.0.3",
+    "@vitejs/plugin-react": "^6.3.0",
     "eslint": "^9",
-    "eslint-config-next": "16.3.2",
-    "jsdom": "^29.1.1",
+    "eslint-config-next": "16.4.6",
+    "jsdom": "^31.0.1",
     "sharp": "^0.35.3",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "vitest": "^4.1.10"
+    "vite": "^8.4.0",
+    "vitest": "^5.1.2",
+    "zod": "^4.6.7"
   }
 }
