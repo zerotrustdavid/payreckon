@@ -3,14 +3,10 @@ import type { NextConfig } from "next";
 /**
  * Content Security Policy.
  *
- * Every asset this site serves is same origin. Fonts are self hosted by
- * next/font at build time rather than fetched from Google, and all imagery is
- * local, so nothing here needs a third party origin except the feedback form.
- *
- * connect-src is the directive that matters most: it is deliberately narrow,
- * allowing exactly one external host, and it is what the /feedback page needs
- * in order to reach Web3Forms. Narrowing it further, or forgetting to list
- * that host, silently breaks form submission while every page still renders.
+ * Every asset this site serves is same origin, and now every request this
+ * site makes is too: the feedback form posts to its own /api/feedback route
+ * rather than a third-party origin, since that route moved behind Resend
+ * server-side. connect-src is 'self' with nothing added.
  *
  * script-src keeps 'unsafe-inline'. Removing it means a nonce, a nonce means
  * middleware, and middleware would force every route to render dynamically,
@@ -30,7 +26,7 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self' data:",
-  "connect-src 'self' https://api.web3forms.com",
+  "connect-src 'self'",
   "form-action 'self'",
   "frame-ancestors 'none'",
   "object-src 'none'",
