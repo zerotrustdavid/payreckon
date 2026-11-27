@@ -6,9 +6,16 @@ title = "PayReckon gitleaks configuration"
 # and exited clean while a live Web3Forms access key sat in a committed test
 # file. The default rules do not match bare UUIDs, because a UUID carries too
 # little entropy to trip a generic detector and is indistinguishable from any
-# other identifier. A UUID is precisely the credential shape this project uses,
-# so the one class of secret that can realistically leak here was the one class
-# nothing was looking for.
+# other identifier. A UUID was precisely the credential shape that project used
+# at the time, so the one class of secret that could realistically leak here
+# was the one class nothing was looking for.
+#
+# The feedback form has since moved behind Resend, whose keys are a high
+# entropy prefixed string rather than a UUID, a shape gitleaks' default rules
+# already have a realistic chance of catching. The two rules below stay for
+# the historical finding and are not claimed to cover every future credential
+# shape this project might ever use — add a rule here when a concrete gap is
+# found, not speculatively, per the principle below.
 #
 # Two rules, deliberately. The first is the high confidence signal: a UUID
 # assigned to something that names itself a credential. The second is the

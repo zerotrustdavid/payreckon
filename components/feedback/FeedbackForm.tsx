@@ -1,15 +1,10 @@
 "use client";
 
 import { useId, useState } from "react";
-import {
-  interpretResponse,
-  networkFailure,
-  normaliseAccessKey,
-} from "../../lib/feedback/web3forms";
 import { SelectField } from "../ui/SelectField";
 import { TextareaField } from "../ui/TextareaField";
 
-const ENDPOINT = "https://api.web3forms.com/submit";
+const ENDPOINT = "/api/feedback";
 const MAX_MESSAGE = 2000;
 const MIN_MESSAGE = 10;
 
@@ -29,18 +24,16 @@ type Status =
   | { kind: "error"; message: string };
 
 /**
- * Feedback form, posting to Web3Forms so the site stays fully static.
- *
- * The access key is a publishable key by design — it identifies the
- * destination inbox and carries no account privileges — but it is read from
- * the environment rather than committed, so this public repo does not hand
- * out a ready-made endpoint to spam.
+ * Feedback form, posting to this site's own /api/feedback route, which sends
+ * through Resend server-side. Previously posted directly to Web3Forms from
+ * the browser; that put a publishable key in the bundle (an accepted risk,
+ * not a secret) but also meant a failure between the browser and Web3Forms
+ * was unobservable — the form could report "sent" with nothing having
+ * arrived, and nothing in the code could say why. Routing through the
+ * server fixes the second problem regardless of what is thought of the
+ * first: success is now gated on the mail provider returning a real id.
  */
 export function FeedbackForm() {
-  const accessKey = normaliseAccessKey(
-    process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY,
-  );
-
   const [type, setType] = useState<FeedbackType>("accuracy");
   const [message, setMessage] = useState("");
   const [botField, setBotField] = useState("");
@@ -52,72 +45,50 @@ export function FeedbackForm() {
   const tooShort = trimmed.length < MIN_MESSAGE;
   const showError = attempted && tooShort;
 
-  const typeLabel = TYPES.find((t) => t.value === type)?.label ?? type;
-
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
     setAttempted(true);
     if (tooShort || status.kind === "sending") return;
 
-    // Honeypot: only a bot fills a field it cannot see. Report success so it
-    // does not learn to work around the check.
-    if (botField) {
-      setStatus({ kind: "sent" });
-      return;
-    }
-
-    if (!accessKey.ok) {
-      // Both cases are a deployment problem rather than anything the visitor
-      // did, so say so plainly and put the specifics in the console.
-      console.error("Feedback form is misconfigured —", accessKey.detail);
-      setStatus({
-        kind: "error",
-        message:
-          accessKey.reason === "missing"
-            ? "This form is not configured yet, so the message was not sent. Please try again later."
-            : "This form is misconfigured, so the message was not sent. Please try again later.",
-      });
-      return;
-    }
-
     setStatus({ kind: "sending" });
 
-    let outcome;
     try {
       const response = await fetch(ENDPOINT, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          // Without this the API is entitled to answer with its HTML success
-          // page rather than JSON, which reads here as a failed submission
-          // even when the message went through.
-          Accept: "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          access_key: accessKey.key,
-          subject: `PayReckon feedback — ${typeLabel}`,
-          from_name: "PayReckon",
-          // Populates the name column in the Web3Forms dashboard, which would
-          // otherwise be blank on every row: the form collects no personal
-          // details, so there is no real name to send.
-          name: "PayReckon visitor",
-          feedback_type: typeLabel,
+          type,
           message: trimmed,
+          // Honeypot: only a bot fills a field it cannot see. The route
+          // reports success without sending anything, so it does not learn
+          // to work around the check.
+          botcheck: botField,
         }),
       });
 
-      // Read as text, not json: a non-JSON reply is itself diagnostic, and
-      // response.json() would discard it.
-      outcome = interpretResponse(response.status, await response.text());
-    } catch (error) {
-      outcome = networkFailure(error);
-    }
+      const body = await response.json().catch(() => null);
 
-    if (!outcome.ok) {
-      // The visitor sees the summary; the detail goes to the console so a
-      // report can say precisely what the API objected to.
-      console.error("Feedback submission failed —", outcome.detail);
-      setStatus({ kind: "error", message: outcome.message });
+      if (!response.ok || !body?.ok) {
+        const detail =
+          typeof body?.error === "string"
+            ? body.error
+            : `The server returned an unexpected response (${response.status}).`;
+        console.error("Feedback submission failed —", detail);
+        setStatus({
+          kind: "error",
+          message:
+            typeof body?.error === "string"
+              ? body.error
+              : "Something went wrong sending this. Please try again.",
+        });
+        return;
+      }
+    } catch (error) {
+      console.error("Feedback submission failed —", error);
+      setStatus({
+        kind: "error",
+        message: "Could not reach the server. Check your connection and try again.",
+      });
       return;
     }
 
