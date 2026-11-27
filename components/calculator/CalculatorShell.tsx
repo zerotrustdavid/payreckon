@@ -29,9 +29,13 @@ export function CalculatorShell({
         <p className="mt-3 text-base leading-relaxed text-muted">{description}</p>
       </header>
 
+      {/* min-w-0 on both grid items: a grid item's default min-width:auto
+          refuses to shrink below its content's natural width, which forced
+          an 8px horizontal scroll at 320px before this was added — the same
+          trap FieldLabel already guards against one level deeper. */}
       <div className="mt-9 grid items-start gap-6 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)]">
-        <div className="flex flex-col gap-5">{inputs}</div>
-        <div className="lg:sticky lg:top-20">{results}</div>
+        <div className="flex min-w-0 flex-col gap-5">{inputs}</div>
+        <div className="min-w-0 lg:sticky lg:top-20">{results}</div>
       </div>
     </div>
   );
